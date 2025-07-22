@@ -1,0 +1,36 @@
+name: Unit Test
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        description: 'Branch to checkout'
+        required: true
+        type: string
+    secrets:
+      KEY_SSH:
+        required: true
+
+jobs:
+  unit-test:
+    name: Check unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+          fetch-depth: 0
+          ssh-key: ${{ secrets.KEY_SSH }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        run: bun install
+
+      - name: Run Unit Tests and update Summary
+        id: unit_test
+        run: bun run test:unit

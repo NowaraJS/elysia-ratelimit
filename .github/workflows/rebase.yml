@@ -1,0 +1,51 @@
+name: Rebase
+
+on:
+  workflow_call:
+    inputs:
+      from:
+        description: 'Branch to rebase from'
+        required: true
+        type: string
+      to:
+        description: 'Branch to rebase to'
+        required: true
+        type: string
+    secrets:
+      KEY_SSH:
+        required: true
+      GIT_EMAIL:
+        required: true
+  workflow_dispatch:
+    inputs:
+      from:
+        description: 'Branch to rebase from'
+        required: true
+        type: string
+      to:
+        description: 'Branch to rebase to'
+        required: true
+        type: string
+
+
+jobs:
+  rebase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.from }}
+          fetch-depth: 0
+          ssh-key: ${{ secrets.KEY_SSH }}
+
+      - name: Fetch all branches
+        run: git fetch origin '+refs/heads/*:refs/remotes/origin/*'
+
+      - name: Rebase
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "${{ secrets.GIT_EMAIL }}"
+          git checkout ${{ inputs.from }}
+          git rebase origin/${{ inputs.to }}
+          git push origin ${{ inputs.from }}
