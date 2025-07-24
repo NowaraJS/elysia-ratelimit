@@ -1,6 +1,6 @@
 {
 	"name": "@nowarajs/elysia-ratelimit",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"author": "Komiriko",
 	"description": "A template to create a bun package.",
 	"type": "module",
