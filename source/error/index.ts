@@ -1,1 +1,1 @@
-export * from './pkgError';
+export { RateLimitError } from './rateLimitError';
