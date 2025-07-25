@@ -1,143 +1,129 @@
-# Prepare your package :
-
-## 1. Add in your repository environment variables and deploy keys:
-
-### 1.1 Prerequisites
-
-#### 1.1.1 SSH
-Generated SSH key with `ssh-keygen -t ed25519 -C "your_mail@domain.ext" -f your_package_name`
-
-- Get the public key with:
-	```bash
-	cat your_package_name.pub
-	```
-	You will get an output like this:
-	```
-	ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC ...
-	```
-
-- Get the private key with:
-	```bash
-	cat your_package_name
-	```
-	You will get an output like this:
-	```
-	-----BEGIN OPENSSH PRIVATE KEY-----
-	...
-	-----END OPENSSH PRIVATE KEY-----
-	```
-
-#### 1.1.2 GPG **(You can reuse your existing GPG key if you have one for you account)**
-
-- Generate a GPG key with `gpg --full-generate-key` and follow the prompts to create a key suitable for signing commits and tags **whithout passphrase**.
-
-- Get the public key with:
-	```bash
-		gpg --armor --export your_email@domain.ext
-	```
-	
-	You will get an output like this:
-	```
-	-----BEGIN PGP PUBLIC KEY BLOCK-----
-	...
-	-----END PGP PUBLIC KEY BLOCK-----
-	```
-	And then copy the output and put in yourh github account settings -> SSH and GPG keys -> New GPG key.
-
-- Get the private key (for github-action) with:
-	```bash
-	gpg --armor --export-secret-keys your_email@domain.ext
-	```
-	You will get an output like this:
-	```
-	-----BEGIN PGP PRIVATE KEY BLOCK-----
-	...
-	-----END PGP PRIVATE KEY BLOCK-----
-	```
-
-### 1.2 Deploy keys
-Create a deploy key in your repository example `SSH_KEY` and put the public key generated in step [1.1.1](#111-ssh).
-
-### 1.3 Environment variables
-
-All environment variables are used in the workflow!
-
-Add the following environment variables to your repository settings:
-
-- `KEY_SSH`: The private SSH key for accessing the repository. (Generated in step [1.1.1](#111-ssh))
-- `KEY_GPG`: The GPG private key for signing commits and tags for git (Generated in step [1.1.2](#112-gpg))
-- `GIT_EMAIL`: Your email address associated with the GPG key.
-- `NPM_TOKEN`: Your npm token for publishing packages.
-
-## 2 Configure your repository
-- Add Ruleset for `main` and `develop` branches.
-- Add tag `need-triage` for issues.
-- Add your settings..
-
-## 3 Configure your package.json
-Update :
-- `name`: The name of your package, e.g., `@your-scope/your-package-name` or `your-package-name`.
-- `version`: Reset to `1.0.0`. or the version you want to start with.
-- `description`: A brief description of your package.
-- `keywords`: Add relevant keywords to help others find your package. (e.g., `["bun", "package-template"]`)
-- `exports`: Define the entry points for your package. For example:
-	```json
-	"exports": {
-		".": "./dist/index.js",
-		"./types": "./dist/types/index.js"
-	}
-	```
-
-## 4 Configure your builder
-Just change `entrypoints` in `builder.ts` to your entry point file. (e.g., `source/index.ts`).
-
-## 5 Update README.md
-Update the README.md file with relevant information about your package.
-
----
----
-<!-- You Can Remove all content above this line -->
-
-# 📦 Package Template
+# 🛡️ Elysia Rate Limit
 
 ## 📌 Table of Contents
 
-- [📦 Package Template](#-package-template)
+- [🛡️ Elysia Rate Limit](#-elysia-rate-limit)
 	- [📌 Table of Contents](#-table-of-contents)
 	- [📝 Description](#-description)
-	- [🌟 Documentation](#-documentation)
+	- [✨ Features](#-features)
 	- [🔧 Installation](#-installation)
 	- [⚙️ Usage](#-usage)
+	- [📊 Rate Limit Headers](#-rate-limit-headers)
+	- [📚 API Reference](#-api-reference)
 	- [⚖️ License](#-license)
 	- [📧 Contact](#-contact)
 
 ## 📝 Description
 
-> Template for creating new npm packages with Bun.
+> A powerful rate limiting plugin for Elysia applications with Redis backend support.
 
-**Package Template** provides a starting point for building and publishing npm packages. Customize this section with a description of your package's purpose and features.
+**Elysia Rate Limit** provides comprehensive rate limiting capabilities to protect your Elysia APIs from excessive use and potential abuse. It tracks request rates by client IP address and enforces configurable limits based on a sliding time window approach using Redis for distributed rate limiting.
 
-## 🌟 Documentation
+## ✨ Features
 
-- [References](https://your-package-docs.com)  
-	*(Update this link to your package documentation if needed.)*
+- 🔒 **IP-based Rate Limiting**: Automatically tracks requests by client IP
+- 📊 **Sliding Window**: Uses sliding window algorithm for accurate rate limiting
+- 🚀 **Redis Backend**: Distributed rate limiting with Redis support
+- 📈 **Standard Headers**: Adds X-RateLimit-* headers for client awareness
+- ⚡ **High Performance**: Optimized for minimal latency impact
+- 🛠️ **Easy Integration**: Simple plugin architecture for Elysia
+- 🎯 **Configurable**: Flexible limits and time windows
 
 ## 🔧 Installation
 
 ```bash
-bun add @your-scope/your-package-name
+bun add @nowarajs/elysia-ratelimit ioredis elysia
 ```
-Replace `@your-scope/your-package-name` with your actual package name.
+
+> **Note**: This package requires Redis and the `ioredis` client library.
 
 ## ⚙️ Usage
 
-```ts
-import { YourExportedFunction } from '@your-scope/your-package-name'
+### Basic Setup
 
-// Example usage
-YourExportedFunction()
+```ts
+import { Elysia } from 'elysia';
+import { Redis } from 'ioredis';
+import { rateLimit } from '@nowarajs/elysia-ratelimit';
+
+// Create Redis instance
+const redis = new Redis({
+	host: 'localhost',
+	port: 6379
+});
+await redis.connect();
+
+// Create application with rate limiting
+const app = new Elysia()
+	.use(rateLimit({
+		redis,
+		limit: 100,           // 100 requests
+		window: 60,           // per minute (60 seconds)
+		message: 'Too many requests, please try again later.'
+	}))
+	.get('/api/data', () => {
+		return { success: true, message: 'This endpoint is rate limited' };
+	});
+
+app.listen(3000);
 ```
-Update this section with usage examples relevant to your package.
+
+### Configuration Options
+
+```ts
+interface RateLimitOptions {
+	redis: Redis;           // Redis instance for storage
+	limit: number;          // Maximum requests allowed
+	window: number;         // Time window in seconds
+	message?: string;       // Custom error message (optional)
+}
+```
+
+### Advanced Usage
+
+```ts
+// Different rate limits for different routes
+const app = new Elysia()
+	.use(rateLimit({
+		redis,
+		limit: 1000,    // Higher limit for general API
+		window: 3600    // Per hour
+	}))
+	.group('/auth', (app) => 
+		app
+			.use(rateLimit({
+				redis,
+				limit: 5,     // Stricter limit for auth endpoints
+				window: 300   // Per 5 minutes
+			}))
+			.post('/login', loginHandler)
+			.post('/register', registerHandler)
+	);
+```
+
+## 📊 Rate Limit Headers
+
+The plugin automatically adds these headers to all responses:
+
+| Header | Description |
+|--------|-------------|
+| `X-RateLimit-Limit` | Maximum number of requests allowed in the window |
+| `X-RateLimit-Remaining` | Number of requests remaining in current window |
+| `X-RateLimit-Reset` | Time in seconds until the rate limit resets |
+
+### Example Response Headers
+
+```
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 85
+X-RateLimit-Reset: 45
+```
+
+## 📚 API Reference
+
+You can find the complete API reference documentation for `Elysia Rate Limit Plugin` at:
+
+- [Reference Documentation](https://nowarajs.github.io/elysia-ratelimit/)
 
 ## ⚖️ License
 
@@ -145,7 +131,5 @@ Distributed under the MIT License. See [LICENSE](./LICENSE) for more information
 
 ## 📧 Contact
 
-Mail - [your-email@domain.com](mailto:your-email@domain.com)
-
-[Project link](https://github.com/your-username/your-repo)
-
+- GitHub: [NowaraJS](https://github.com/NowaraJS)
+- Package: [@nowarajs/elysia-ratelimit](https://www.npmjs.com/package/@nowarajs/elysia-ratelimit)
