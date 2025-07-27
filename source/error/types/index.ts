@@ -1,1 +1,0 @@
-export type { RateLimitErrorOptions } from './rateLimitErrorOptions';

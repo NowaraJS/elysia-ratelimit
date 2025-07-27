@@ -1,6 +1,6 @@
+import { HttpError } from '@nowarajs/error';
 import { Elysia } from 'elysia';
 
-import { RateLimitError } from '#/error/rateLimitError';
 import { rateLimitErrorKeys } from './enums/rateLimitErrorKeys';
 import type { RateLimitOptions } from './types/rateLimitOptions';
 
@@ -73,9 +73,9 @@ export const rateLimit = ({ redis, limit, window }: RateLimitOptions) => new Ely
 
 		if (currentCount > limit) {
 			set.status = 429;
-			throw new RateLimitError({
+			throw new HttpError({
 				message: rateLimitErrorKeys.rateLimitExceeded,
-				httpStatusCode: 429,
+				httpStatusCode: 'TOO_MANY_REQUESTS',
 				cause: {
 					limit,
 					window,

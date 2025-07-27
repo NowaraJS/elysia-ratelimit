@@ -1,4 +1,4 @@
-# 🛡️ Elysia Rate Limit
+# 🛡️ NowaraJS - Elysia Rate Limit
 
 ## 📌 Table of Contents
 
@@ -32,7 +32,7 @@
 ## 🔧 Installation
 
 ```bash
-bun add @nowarajs/elysia-ratelimit ioredis elysia
+bun add @nowarajs/elysia-ratelimit @nowarajs/error ioredis elysia
 ```
 
 > **Note**: This package requires Redis and the `ioredis` client library.
