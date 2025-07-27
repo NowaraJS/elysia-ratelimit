@@ -1,4 +1,24 @@
 
+## v1.1.2
+
+[compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.1.1...v1.1.2)
+
+### 🧹 Refactors
+
+- **🧹:** [Remove RateLimitError class and related files] ## Refactoring - Deleted the `RateLimitError` class and its associated files. - Updated the `rateLimit` function to throw `HttpError` instead of `RateLimitError`. - Removed related type definitions and tests for `RateLimitError`. ## Description This commit removes the `RateLimitError` class and its related files from the codebase. The `rateLimit` function has been updated to throw a more generic `HttpError` with a status code of 'TOO_MANY_REQUESTS' instead of the custom error. This simplifies error handling and reduces the complexity of the error management in the application. ([b6d7a2d](https://github.com/NowaraJS/elysia-ratelimit/commit/b6d7a2d))
+
+### 📖 Documentation
+
+- **📖:** [Update README for package installation instructions] ([59f31d0](https://github.com/NowaraJS/elysia-ratelimit/commit/59f31d0))
+
+### 📦 Build
+
+- **📦:** [Update devDependencies and peerDependencies] ([a887ccf](https://github.com/NowaraJS/elysia-ratelimit/commit/a887ccf))
+
+### ❤️ Contributors
+
+- Komiroko <komiriko@pm.me>
+
 ## v1.1.1
 
 [compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.1.0...v1.1.1)
