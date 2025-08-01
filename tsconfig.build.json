@@ -5,7 +5,7 @@
 		"hideGenerator": true,
 		"customFooterHtml": "<p>Generated with ❤️</p>"
 	},
-	"include": ["source"],
+	"include": ["source/**/index.ts"],
 	"compilerOptions": {
 		// —————————————— Emit —————————————— //
 		"noEmit": false,
