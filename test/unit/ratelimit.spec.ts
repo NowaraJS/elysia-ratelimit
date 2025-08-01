@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { Redis, type RedisKey } from 'ioredis';
 
-import { rateLimit } from '#/rateLimit';
+import { ratelimit } from '#/ratelimit';
 
 class MockRedis extends Redis {
 	private readonly _data: Map<RedisKey, string>;
@@ -97,7 +97,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 
 		for (let i = 0; i < limit; ++i) {
@@ -127,7 +127,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 
 		for (let i = 0; i < 5; ++i)
@@ -155,7 +155,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 1;
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 		const response = await app.handle(new Request('http://localhost/test', {
 			headers: { 'x-forwarded-for': '127.0.0.1' }
@@ -171,7 +171,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 
 		const response1 = await app.handle(new Request('http://localhost/test', {
@@ -198,7 +198,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 
 		const ips = ['10.0.0.1', '10.0.0.2', '10.0.0.3'];
@@ -222,7 +222,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 
 		const ip1 = '172.16.0.1';
@@ -261,7 +261,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 		const ip = '203.0.113.1';
 
@@ -286,7 +286,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 		const ip = '198.51.100.1';
 
@@ -313,7 +313,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 		const ip = '203.0.113.100';
 		const promises: Promise<Response>[] = [];
@@ -348,7 +348,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 		const longIp = '2001:0db8:85a3:0000:0000:8a2e:0370:7334';
 
@@ -365,7 +365,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 		const specialIp = '127.0.0.1,192.168.1.1'; // Comma-separated (common in proxies)
 
@@ -408,7 +408,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 		const testIps = Array.from({ length: 20 }, (_, i) => `10.1.${Math.floor(i / 256)}.${i % 256}`);
 		const allPromises: Promise<Response>[] = [];
@@ -439,7 +439,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 		const testIp = '172.16.254.1';
 
@@ -463,7 +463,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 		const burstSize = 50;
 		const promises: Promise<Response>[] = [];
@@ -490,7 +490,7 @@ describe('rateLimit', () => {
 		const limit = 1;
 		const window = 60; // seconds
 
-		const lowLimitApp = rateLimit({ redis, limit, window })
+		const lowLimitApp = ratelimit({ redis, limit, window })
 			.get('/test', () => 'Low limit test');
 
 
@@ -519,7 +519,7 @@ describe('rateLimit', () => {
 		const limit = 1000; // high limit
 		const window = 60; // seconds
 
-		const highLimitApp = rateLimit({ redis, limit, window })
+		const highLimitApp = ratelimit({ redis, limit, window })
 			.get('/test', () => 'High limit test');
 
 		const ip = '203.0.113.250';
@@ -544,7 +544,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 		const realIp = '192.168.1.100';
 		const spoofedIp = '192.168.1.101';
@@ -578,7 +578,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 		const longIp = 'a'.repeat(1000); // Very long string
 
@@ -595,7 +595,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 		// Test with URL-encoded unicode (which is valid in HTTP headers)
 		const unicodeIp = '192.168.1.100%F0%9F%9A%80'; // URL-encoded rocket emoji
@@ -613,7 +613,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 		const startTime = Date.now();
 		const numberOfRequests = 100;
@@ -647,7 +647,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 		// Test with escaped characters that could be used in injection attempts
 		const maliciousHeader = '192.168.1.100%0d%0aX-Injected:%20malicious';
@@ -667,7 +667,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 		// Test with completely empty headers
 		const response1 = await app.handle(new Request('http://localhost/test', {}));
@@ -690,7 +690,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 		const ip = '203.0.113.50';
 
@@ -707,7 +707,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 		const forwardedIp = '10.0.0.1';
 		const realIp = '10.0.0.2';
@@ -740,7 +740,7 @@ describe('rateLimit', () => {
 		const limit = 2;
 		const window = 1; // seconds
 
-		const shortWindowApp = rateLimit({ redis, limit, window })
+		const shortWindowApp = ratelimit({ redis, limit, window })
 			.get('/test', () => 'Short window test');
 
 		const ip = '192.168.100.1';
@@ -777,7 +777,7 @@ describe('rateLimit', () => {
 		const limit = 3;
 		const window = 60; // seconds
 
-		const methodApp = rateLimit({ redis, limit, window })
+		const methodApp = ratelimit({ redis, limit, window })
 			.get('/', () => 'GET response')
 			.post('/', () => 'POST response')
 			.put('/', () => 'PUT response')
@@ -820,7 +820,7 @@ describe('rateLimit', () => {
 		const limit = 5;
 		const window = 60; // seconds
 
-		const app = rateLimit({ redis, limit, window })
+		const app = ratelimit({ redis, limit, window })
 			.get('/test', () => 'OK');
 		const ip = '172.30.40.50';
 
@@ -841,7 +841,7 @@ describe('rateLimit', () => {
 		const limit = 2;
 		const window = 60; // seconds
 
-		const bodyApp = rateLimit({ redis, limit, window })
+		const bodyApp = ratelimit({ redis, limit, window })
 			.post('/', ({ body }) => ({ received: body }));
 
 		const ip = '192.168.50.100';

@@ -1,8 +1,8 @@
 import { HttpError } from '@nowarajs/error';
 import { Elysia } from 'elysia';
 
-import { rateLimitErrorKeys } from './enums/rateLimitErrorKeys';
-import type { RateLimitOptions } from './types/rateLimitOptions';
+import { RATE_LIMIT_ERROR_KEYS } from './enums/ratelimitErrorKeys';
+import type { RateLimitOptions } from './types/ratelimitOptions';
 
 /**
  * The `rateLimitPlugin` provides rate limiting capabilities for Elysia applications,
@@ -34,7 +34,6 @@ import type { RateLimitOptions } from './types/rateLimitOptions';
  *     redis,
  *     limit: 100,           // 100 requests
  *     window: 60,           // per minute
- *     message: 'Too many requests, please try again later.'
  *   }))
  *   .get('/public-api', () => {
  *     return { success: true, message: 'This endpoint is rate limited' };
@@ -44,7 +43,7 @@ import type { RateLimitOptions } from './types/rateLimitOptions';
  * app.listen(3000);
  * ```
  */
-export const rateLimit = ({ redis, limit, window }: RateLimitOptions) => new Elysia({
+export const ratelimit = ({ redis, limit, window }: RateLimitOptions) => new Elysia({
 	name: 'rateLimit',
 	seed: {
 		redis,
@@ -74,7 +73,7 @@ export const rateLimit = ({ redis, limit, window }: RateLimitOptions) => new Ely
 		if (currentCount > limit) {
 			set.status = 429;
 			throw new HttpError({
-				message: rateLimitErrorKeys.rateLimitExceeded,
+				message: RATE_LIMIT_ERROR_KEYS.RATE_LIMIT_EXCEEDED,
 				httpStatusCode: 'TOO_MANY_REQUESTS',
 				cause: {
 					limit,
@@ -91,4 +90,4 @@ export const rateLimit = ({ redis, limit, window }: RateLimitOptions) => new Ely
 			'X-RateLimit-Reset': (await redis.ttl(key)).toString()
 		};
 	})
-	.as('scoped');
+	.as('global');
