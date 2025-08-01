@@ -44,7 +44,7 @@ bun add @nowarajs/elysia-ratelimit @nowarajs/error ioredis elysia
 ```ts
 import { Elysia } from 'elysia';
 import { Redis } from 'ioredis';
-import { rateLimit } from '@nowarajs/elysia-ratelimit';
+import { ratelimit } from '@nowarajs/elysia-ratelimit';
 
 // Create Redis instance
 const redis = new Redis({
@@ -55,7 +55,7 @@ await redis.connect();
 
 // Create application with rate limiting
 const app = new Elysia()
-	.use(rateLimit({
+	.use(ratelimit({
 		redis,
 		limit: 100,           // 100 requests
 		window: 60,           // per minute (60 seconds)
@@ -84,7 +84,7 @@ interface RateLimitOptions {
 ```ts
 // Different rate limits for different routes
 const app = new Elysia()
-	.use(rateLimit({
+	.use(ratelimit({
 		redis,
 		limit: 1000,    // Higher limit for general API
 		window: 3600    // Per hour

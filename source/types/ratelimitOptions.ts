@@ -9,7 +9,6 @@ import type { Redis } from 'ioredis';
  *   redis: redisInstance, // Your Redis instance
  *   limit: 100,          // Allow 100 requests
  *   window: 60,          // Per 60 seconds
- *   message: 'You have exceeded the rate limit. Please try again later.'
  * };
  * ```
  */
