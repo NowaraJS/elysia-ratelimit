@@ -35,7 +35,7 @@ export class MemoryStore implements RateLimitStore {
 			return null;
 
 		const now = Date.now();
-		if (now > entry.expiresAt) {
+		if (now > entry.expiresAt && entry.expiresAt !== -1) {
 			this._store.delete(key);
 			return null;
 		}
@@ -64,13 +64,13 @@ export class MemoryStore implements RateLimitStore {
 		const now = Date.now();
 		const entry = this._store.get(key);
 
-		if (!entry || now > entry.expiresAt) {
+		if (!entry || (now > entry.expiresAt && entry.expiresAt !== -1)) {
 			if (entry)
 				this._store.delete(key);
 
 			this._store.set(key, {
 				value: '1',
-				expiresAt: now + (3600 * 1000) // Default 1 hour expiry
+				expiresAt: -1 // No expiration by default (like Redis INCR)
 			});
 			return 1;
 		}
@@ -92,6 +92,9 @@ export class MemoryStore implements RateLimitStore {
 		const entry = this._store.get(key);
 
 		if (!entry)
+			return -1;
+
+		if (entry.expiresAt === -1)
 			return -1;
 
 		const now = Date.now();
@@ -118,7 +121,7 @@ export class MemoryStore implements RateLimitStore {
 	private _cleanup(): void {
 		const now = Date.now();
 		for (const [key, entry] of this._store.entries())
-			if (now > entry.expiresAt)
+			if (now > entry.expiresAt && entry.expiresAt !== -1)
 				this._store.delete(key);
 	}
 
