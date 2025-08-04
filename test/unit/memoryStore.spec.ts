@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, test, beforeEach, afterEach } from 'bun:test';
 
 import { MemoryStore } from '#/stores/memoryStore';
 
@@ -87,31 +87,31 @@ describe('MemoryStore', () => {
 
 		test('should trigger automatic cleanup', async () => {
 			const store = new MemoryStore();
-			
+
 			// Create multiple short-lived entries that will expire
 			for (let i = 0; i < 5; i++)
 				store.setex(`temp${i}`, 1, `value${i}`);
-			
+
 			// Create some entries that won't expire
 			for (let i = 0; i < 3; i++)
 				store.setex(`persist${i}`, 60, `value${i}`);
-			
+
 			// Verify entries exist
 			expect(store.get('temp0')).toBe('value0');
 			expect(store.get('temp4')).toBe('value4');
 			expect(store.get('persist0')).toBe('value0');
-			
+
 			// Wait for expiration and multiple cleanup cycles to ensure cleanup runs
 			await new Promise((resolve) => setTimeout(resolve, 2500));
-			
+
 			// Expired entries should be cleaned up automatically
 			expect(store.get('temp0')).toBeNull();
 			expect(store.get('temp4')).toBeNull();
-			
+
 			// Non-expired entries should still exist
 			expect(store.get('persist0')).toBe('value0');
 			expect(store.get('persist2')).toBe('value2');
-			
+
 			// Cleanup
 			store.destroy();
 		});
@@ -119,26 +119,26 @@ describe('MemoryStore', () => {
 		test('should execute automatic cleanup timer callback', async () => {
 			// Use a very short cleanup interval for testing (100ms)
 			const store = new MemoryStore(100);
-			
+
 			// Create entries that will expire quickly
 			for (let i = 0; i < 3; i++)
 				store.setex(`test${i}`, 1, `value${i}`);
-			
+
 			// Verify entries exist initially
 			expect(store.get('test0')).toBe('value0');
 			expect(store.get('test1')).toBe('value1');
-			
+
 			// Wait for entries to expire
 			await new Promise((resolve) => setTimeout(resolve, 1100));
-			
+
 			// Wait for cleanup timer to run (at least one cleanup cycle)
 			await new Promise((resolve) => setTimeout(resolve, 150));
-			
+
 			// Expired entries should be automatically cleaned up by timer
 			expect(store.get('test0')).toBeNull();
 			expect(store.get('test1')).toBeNull();
 			expect(store.get('test2')).toBeNull();
-			
+
 			// Cleanup
 			store.destroy();
 		});
@@ -237,6 +237,57 @@ describe('MemoryStore', () => {
 			expect(duration).toBeLessThan(100);
 
 			// Cleanup
+			store.destroy();
+		});
+	});
+
+	describe('No Expiration Behavior', () => {
+		let store: MemoryStore;
+
+		beforeEach(() => {
+			store = new MemoryStore();
+		});
+
+		afterEach(() => {
+			store.destroy();
+		});
+
+		test('incr should create new key without expiration like Redis', () => {
+			const result = store.incr('newKey');
+
+			expect(result).toBe(1);
+			expect(store.get('newKey')).toBe('1');
+			expect(store.ttl('newKey')).toBe(-1); // No expiration like Redis INCR
+		});
+
+		test('incr should preserve existing expiration when incrementing', () => {
+			// Set initial value with TTL
+			store.setex('key', 10, '5');
+			const result = store.incr('key');
+
+			expect(result).toBe(6);
+			// TTL should still be approximately 10 seconds
+			const ttl = store.ttl('key');
+			expect(ttl).toBeGreaterThan(8);
+			expect(ttl).toBeLessThanOrEqual(10);
+		});
+
+		test('ttl should return -1 for keys without expiration', () => {
+			store.incr('noexpiry');
+			expect(store.ttl('noexpiry')).toBe(-1);
+		});
+
+		test('cleanup should not remove keys without expiration', async () => {
+			const store = new MemoryStore(100); // 100ms cleanup interval
+			store.incr('persistent'); // No expiration
+			store.setex('temporary', 1, 'value'); // 1 second TTL
+
+			// Wait for cleanup to run and for TTL to expire
+			await new Promise((resolve) => setTimeout(resolve, 1200));
+
+			expect(store.get('persistent')).toBe('1'); // Should still exist
+			expect(store.get('temporary')).toBeNull(); // Should be cleaned up
+
 			store.destroy();
 		});
 	});
