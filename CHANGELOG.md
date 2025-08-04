@@ -1,4 +1,20 @@
 
+## v1.2.0
+
+[compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.1.3...v1.2.0)
+
+### 🚀 Enhancements
+
+- **🚀:** [Add in-memory and Redis store implementations for rate limiting] ([62060a0](https://github.com/NowaraJS/elysia-ratelimit/commit/62060a0))
+
+### 🧪 Tests
+
+- **🧪:** [Add memory store tests for rate limiting functionality] ([db58a1b](https://github.com/NowaraJS/elysia-ratelimit/commit/db58a1b))
+
+### ❤️ Contributors
+
+- Komiroko <komiriko@pm.me>
+
 ## v1.1.3
 
 [compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.1.2...v1.1.3)
