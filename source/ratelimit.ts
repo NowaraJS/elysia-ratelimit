@@ -2,6 +2,7 @@ import { HttpError } from '@nowarajs/error';
 import { Elysia } from 'elysia';
 
 import { RATE_LIMIT_ERROR_KEYS } from './enums/ratelimitErrorKeys';
+import { MemoryStore } from './stores/memoryStore';
 import type { RateLimitOptions } from './types/ratelimitOptions';
 
 /**
@@ -43,51 +44,57 @@ import type { RateLimitOptions } from './types/ratelimitOptions';
  * app.listen(3000);
  * ```
  */
-export const ratelimit = ({ redis, limit, window }: RateLimitOptions) => new Elysia({
-	name: 'rateLimit',
-	seed: {
-		redis,
-		limit,
-		window
-	}
-})
-	.onRequest(async ({ set, request, server }) => {
-		const ip = request.headers.get('x-forwarded-for')
-			|| request.headers.get('x-real-ip')
-			|| server?.requestIP(request)?.address // get IP from socket directly
-			|| '127.0.0.1';
+export const ratelimit = ({ redis, limit, window }: RateLimitOptions) => {
+	const store = redis
+		? redis
+		: new MemoryStore();
 
-		const key = `ratelimit:${ip}`;
-
-		const current = await redis.get(key);
-		const count = current ? parseInt(current) : 0;
-
-		if (count === 0)
-			await redis.setex(key, window, '1');
-		else
-			await redis.incr(key);
-
-		const newCount = await redis.get(key);
-		const currentCount = newCount ? parseInt(newCount) : 0;
-
-		if (currentCount > limit) {
-			set.status = 429;
-			throw new HttpError({
-				message: RATE_LIMIT_ERROR_KEYS.RATE_LIMIT_EXCEEDED,
-				httpStatusCode: 'TOO_MANY_REQUESTS',
-				cause: {
-					limit,
-					window,
-					remaining: 0,
-					reset: await redis.ttl(key)
-				}
-			});
+	return new Elysia({
+		name: 'rateLimit',
+		seed: {
+			redis,
+			limit,
+			window
 		}
-
-		set.headers = {
-			'X-RateLimit-Limit': limit.toString(),
-			'X-RateLimit-Remaining': Math.max(0, limit - currentCount).toString(),
-			'X-RateLimit-Reset': (await redis.ttl(key)).toString()
-		};
 	})
-	.as('global');
+		.onRequest(async ({ set, request, server }) => {
+			const ip = request.headers.get('x-forwarded-for')
+				|| request.headers.get('x-real-ip')
+				|| server?.requestIP(request)?.address // get IP from socket directly
+				|| '127.0.0.1';
+
+			const key = `ratelimit:${ip}`;
+
+			const current = await store.get(key);
+			const count = current ? parseInt(current) : 0;
+
+			if (count === 0)
+				await store.setex(key, window, '1');
+			else
+				await store.incr(key);
+
+			const newCount = await store.get(key);
+			const currentCount = newCount ? parseInt(newCount) : 0;
+
+			if (currentCount > limit) {
+				set.status = 429;
+				throw new HttpError({
+					message: RATE_LIMIT_ERROR_KEYS.RATE_LIMIT_EXCEEDED,
+					httpStatusCode: 'TOO_MANY_REQUESTS',
+					cause: {
+						limit,
+						window,
+						remaining: 0,
+						reset: await store.ttl(key)
+					}
+				});
+			}
+
+			set.headers = {
+				'X-RateLimit-Limit': limit.toString(),
+				'X-RateLimit-Remaining': Math.max(0, limit - currentCount).toString(),
+				'X-RateLimit-Reset': (await store.ttl(key)).toString()
+			};
+		})
+		.as('global');
+};
