@@ -90,8 +90,7 @@ class MockRedis extends Redis {
 	}
 }
 
-
-describe('rateLimit', () => {
+describe('rateLimit - Redis Store', () => {
 	test('should allow requests within rate limit', async () => {
 		const redis = new MockRedis();
 		const limit = 5;
@@ -877,5 +876,222 @@ describe('rateLimit', () => {
 			body: JSON.stringify({ test: 'data3' })
 		}));
 		expect(response3.status).toBe(429);
+	});
+});
+
+describe('rateLimit - Memory Store', () => {
+	test('should allow requests within rate limit (memory)', async () => {
+		const limit = 5;
+		const window = 60; // seconds
+
+		const app = ratelimit({ limit, window }) // No redis = memory store
+			.get('/test', () => 'OK');
+
+		for (let i = 0; i < limit; ++i) {
+			const res = await app.handle(new Request('http://localhost/test', {
+				method: 'GET',
+				headers: {
+					'x-forwarded-for': '127.0.0.1'
+				}
+			}));
+
+			expect(res.status).toEqual(200);
+			const text = await res.text();
+			expect(text).toEqual('OK');
+
+			// Check rate limit headers
+			const remaining = res.headers.get('X-RateLimit-Remaining');
+			const limitHeader = res.headers.get('X-RateLimit-Limit');
+
+			expect(remaining).toBeDefined();
+			expect(parseInt(remaining || '0')).toEqual(4 - i);
+			expect(limitHeader).toEqual('5');
+		}
+	});
+
+	test('should block requests exceeding rate limit (memory)', async () => {
+		const limit = 5;
+		const window = 60; // seconds
+
+		const app = ratelimit({ limit, window })
+			.get('/test', () => 'OK');
+
+		for (let i = 0; i < 5; ++i)
+			await app.handle(
+				new Request('http://localhost/', {
+					headers: { 'x-forwarded-for': '127.0.0.1' }
+				})
+			);
+
+		await Bun.sleep(100);
+
+		const blockedResponse = await app.handle(
+			new Request('http://localhost/', {
+				headers: { 'x-forwarded-for': '127.0.0.1' }
+			})
+		);
+
+		expect(blockedResponse.status).toBe(429);
+		const errorText = await blockedResponse.text();
+		expect(errorText).toEqual('elysia.ratelimit.error.exceeded');
+	});
+
+	test('should handle different IP extraction headers (memory)', async () => {
+		const limit = 5;
+		const window = 60; // seconds
+
+		const app = ratelimit({ limit, window })
+			.get('/test', () => 'OK');
+
+		const response1 = await app.handle(new Request('http://localhost/test', {
+			headers: { 'x-forwarded-for': '192.168.1.100' }
+		}));
+		expect(response1.status).toEqual(200);
+		expect(response1.headers.get('X-RateLimit-Remaining')).toEqual('4');
+
+		// Test x-real-ip header (should be different rate limit bucket)
+		const response2 = await app.handle(new Request('http://localhost/test', {
+			headers: { 'x-real-ip': '192.168.1.101' }
+		}));
+		expect(response2.status).toEqual(200);
+		expect(response2.headers.get('X-RateLimit-Remaining')).toEqual('4');
+
+		// Test fallback to default IP when no headers present
+		const response3 = await app.handle(new Request('http://localhost/test', {}));
+		expect(response3.status).toEqual(200);
+		expect(response3.headers.get('X-RateLimit-Remaining')).toEqual('4');
+	});
+
+	test('should maintain separate counters for each IP (memory)', async () => {
+		const limit = 5;
+		const window = 60; // seconds
+
+		const app = ratelimit({ limit, window })
+			.get('/test', () => 'OK');
+
+		const ip1 = '172.16.0.1';
+		const ip2 = '172.16.0.2';
+
+		// IP1 makes 3 requests
+		for (let i = 0; i < 3; ++i) {
+			const response = await app.handle(new Request('http://localhost/test', {
+				headers: { 'x-forwarded-for': ip1 }
+			}));
+			expect(response.status).toEqual(200);
+		}
+
+		// IP2 makes 2 requests
+		for (let i = 0; i < 2; ++i) {
+			const response = await app.handle(new Request('http://localhost/test', {
+				headers: { 'x-forwarded-for': ip2 }
+			}));
+			expect(response.status).toEqual(200);
+		}
+
+		// Check remaining counts are different
+		const response1 = await app.handle(new Request('http://localhost/test', {
+			headers: { 'x-forwarded-for': ip1 }
+		}));
+		expect(response1.headers.get('X-RateLimit-Remaining')).toEqual('1');
+
+		const response2 = await app.handle(new Request('http://localhost/test', {
+			headers: { 'x-forwarded-for': ip2 }
+		}));
+		expect(response2.headers.get('X-RateLimit-Remaining')).toEqual('2');
+	});
+
+	test('should reset rate limit after window period (memory)', async () => {
+		const limit = 2;
+		const window = 1; // seconds
+
+		const shortWindowApp = ratelimit({ limit, window })
+			.get('/test', () => 'Short window test');
+
+		const ip = '192.168.100.1';
+
+		// Make 2 requests (exhaust limit)
+		const response1 = await shortWindowApp.handle(new Request('http://localhost/test', {
+			headers: { 'x-forwarded-for': ip }
+		}));
+		expect(response1.status).toEqual(200);
+
+		const response2 = await shortWindowApp.handle(new Request('http://localhost/test', {
+			headers: { 'x-forwarded-for': ip }
+		}));
+		expect(response2.status).toEqual(200);
+
+		// Third request should be blocked
+		const response3 = await shortWindowApp.handle(new Request('http://localhost/test', {
+			headers: { 'x-forwarded-for': ip }
+		}));
+		expect(response3.status).toBe(429);
+
+		// Wait for window to expire
+		await Bun.sleep(1100);
+
+		// Should work again after window expires
+		const response4 = await shortWindowApp.handle(new Request('http://localhost/test', {
+			headers: { 'x-forwarded-for': ip }
+		}));
+		expect(response4.status).toEqual(200);
+	});
+
+	test('should maintain performance under load (memory)', async () => {
+		const limit = 5;
+		const window = 60; // seconds
+
+		const app = ratelimit({ limit, window })
+			.get('/test', () => 'OK');
+		const startTime = Date.now();
+		const numberOfRequests = 100;
+		const promises: Promise<Response>[] = [];
+
+		// Generate unique IPs to avoid rate limiting
+		for (let i = 0; i < numberOfRequests; ++i) {
+			const ip = `192.168.${Math.floor(i / 256)}.${i % 256}`;
+			promises.push(
+				app.handle(new Request('http://localhost/test', {
+					headers: { 'x-forwarded-for': ip }
+				}))
+			);
+		}
+
+		const responses = await Promise.all(promises);
+		const endTime = Date.now();
+		const totalTime = endTime - startTime;
+
+		// All requests should succeed (unique IPs)
+		responses.forEach((response) => {
+			expect(response.status).toEqual(200);
+		});
+
+		// Memory store should be faster than Redis
+		expect(totalTime).toBeLessThan(1000); // 1 second max (should be much faster)
+	});
+
+	test('should handle burst traffic correctly (memory)', async () => {
+		const limit = 5;
+		const window = 60; // seconds
+
+		const app = ratelimit({ limit, window })
+			.get('/test', () => 'OK');
+		const burstSize = 50;
+		const promises: Promise<Response>[] = [];
+
+		// Create a burst of requests from different IPs to test system performance
+		for (let i = 0; i < burstSize; ++i) {
+			const ip = `10.20.30.${i % 255}`;
+			promises.push(
+				app.handle(new Request('http://localhost/test', {
+					headers: { 'x-forwarded-for': ip }
+				}))
+			);
+		}
+
+		const responses = await Promise.all(promises);
+
+		// All requests should succeed since they're from different IPs
+		const successCount = responses.filter((r) => r.status === 200).length;
+		expect(successCount).toBe(burstSize);
 	});
 });
