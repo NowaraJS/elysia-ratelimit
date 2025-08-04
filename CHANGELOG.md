@@ -1,4 +1,20 @@
 
+## v1.2.1
+
+[compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.2.0...v1.2.1)
+
+### 🔧 Fixes
+
+- **🔧:** [Handle expiration correctly for MemoryStore entries] ([0737927](https://github.com/NowaraJS/elysia-ratelimit/commit/0737927))
+
+### 🧪 Tests
+
+- **🧪:** [Enhance MemoryStore tests with new expiration behaviors] ([a627e8b](https://github.com/NowaraJS/elysia-ratelimit/commit/a627e8b))
+
+### ❤️ Contributors
+
+- Komiroko <komiriko@pm.me>
+
 ## v1.2.0
 
 [compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.1.3...v1.2.0)
