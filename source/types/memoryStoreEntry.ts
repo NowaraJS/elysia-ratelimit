@@ -5,6 +5,7 @@ export interface MemoryStoreEntry {
 	readonly value: string;
 	/**
 	 * Timestamp when this entry expires (in milliseconds).
+	 * -1 means no expiration (like Redis behavior).
 	 */
 	readonly expiresAt: number;
 }
