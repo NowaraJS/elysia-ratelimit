@@ -15,8 +15,9 @@ import type { Redis } from 'ioredis';
 export interface RateLimitOptions {
 	/**
 	 * Redis instance used for storing rate limit data.
+	 * This is optional and can be omitted if you want to use an in-memory store.
 	 */
-	readonly redis: Redis;
+	readonly redis?: Redis;
 	/**
 	 * Maximum number of requests allowed in the time window.
 	 *
