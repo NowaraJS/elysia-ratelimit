@@ -1,5 +1,5 @@
-name: Deploy
-run-name: Deploy to "${{ github.ref_name }}" by "${{ github.actor }}"
+name: main-deploy
+run-name: "[main-deploy] - Deploy to \"${{ github.ref_name }}\" by \"${{ github.actor }}\""
 
 on:
   push:
@@ -75,7 +75,7 @@ jobs:
 
   lint:
     needs: detect-context
-    uses: ./.github/workflows/lint.yml
+    uses: ./.github/workflows/job-lint.yml
     with:
       branch: ${{ needs.detect-context.outputs.branch }}
     secrets:
@@ -87,7 +87,7 @@ jobs:
     needs: 
       - lint
       - detect-context
-    uses: ./.github/workflows/build.yml
+    uses: ./.github/workflows/job-build.yml
     with:
       branch: ${{ needs.detect-context.outputs.branch }}
     secrets:
@@ -97,17 +97,36 @@ jobs:
     needs:
       - build
       - detect-context
-    uses: ./.github/workflows/unit-test.yml
+    uses: ./.github/workflows/job-unit-test.yml
     with:
       branch: ${{ needs.detect-context.outputs.branch }}
     secrets:
       KEY_SSH: ${{ secrets.KEY_SSH }}
+      MSSQL_HOST: ${{ secrets.MSSQL_HOST }}
+      MSSQL_DATABASE: ${{ secrets.MSSQL_DATABASE }}
+      MSSQL_USER: ${{ secrets.MSSQL_USER }}
+      MSSQL_PASSWORD: ${{ secrets.MSSQL_PASSWORD }}
 
-  create-github-release:
+  integration-test:
+    needs:
+      - build
+      - detect-context
+    uses: ./.github/workflows/job-integration-test.yml
+    with:
+      branch: ${{ needs.detect-context.outputs.branch }}
+    secrets:
+      KEY_SSH: ${{ secrets.KEY_SSH }}
+      MSSQL_HOST: ${{ secrets.MSSQL_HOST }}
+      MSSQL_DATABASE: ${{ secrets.MSSQL_DATABASE }}
+      MSSQL_USER: ${{ secrets.MSSQL_USER }}
+      MSSQL_PASSWORD: ${{ secrets.MSSQL_PASSWORD }}
+
+  create-release:
     needs:
       - unit-test
+      - integration-test
       - detect-context
-    uses: ./.github/workflows/create-github-release.yml
+    uses: ./.github/workflows/job-create-github-release.yml
     with:
       branch: ${{ needs.detect-context.outputs.branch }}
       versionSuffix: ${{ needs.detect-context.outputs.versionSuffix }}
@@ -120,9 +139,9 @@ jobs:
 
   publish-npm:
     needs:
-      - create-github-release
+      - create-release
       - detect-context
-    uses: ./.github/workflows/publish-npm.yml
+    uses: ./.github/workflows/job-publish-npm.yml
     with:
       branch: ${{ needs.detect-context.outputs.branch }}
       npmTag: ${{ needs.detect-context.outputs.npmTag }}
@@ -130,12 +149,13 @@ jobs:
       KEY_SSH: ${{ secrets.KEY_SSH }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  doc:
+  docs:
     needs:
       - unit-test
+      - integration-test
       - detect-context
     if: needs.detect-context.outputs.branch == 'main' && needs.detect-context.outputs.isPrerelease == 'false'
-    name: Doc
+    name: Generate Documentation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -162,12 +182,12 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
 
-  rebase:
+  rebase-dev:
     needs:
-      - create-github-release
+      - create-release
       - detect-context
     if: needs.detect-context.outputs.rebaseDevToMain == 'true'
-    uses: ./.github/workflows/rebase.yml
+    uses: ./.github/workflows/job-rebase.yml
     with:
       from: develop
       to: main

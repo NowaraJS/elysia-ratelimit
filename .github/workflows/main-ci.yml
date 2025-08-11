@@ -1,5 +1,5 @@
-name: Checker
-run-name: Checker run for "${{ github.head_ref || github.ref_name }}" by "${{ github.actor }}"
+name: main-ci
+run-name: "[main-ci] Checker run for \"${{ github.head_ref || github.ref_name }}\" by \"${{ github.actor }}\""
 
 on:
   pull_request:
@@ -20,7 +20,7 @@ on:
 
 jobs:
   lint:
-    uses: ./.github/workflows/lint.yml
+    uses: ./.github/workflows/job-lint.yml
     with:
       branch: ${{ inputs.branch || github.head_ref || github.ref_name }}
     secrets:
@@ -30,7 +30,7 @@ jobs:
 
   build:
     needs: lint
-    uses: ./.github/workflows/build.yml
+    uses: ./.github/workflows/job-build.yml
     with:
       branch: ${{ inputs.branch || github.head_ref || github.ref_name }}
     secrets:
@@ -38,8 +38,24 @@ jobs:
 
   unit-test:
     needs: build
-    uses: ./.github/workflows/unit-test.yml
+    uses: ./.github/workflows/job-unit-test.yml
     with:
       branch: ${{ inputs.branch || github.head_ref || github.ref_name }}
     secrets:
       KEY_SSH: ${{ secrets.KEY_SSH }}
+      MSSQL_HOST: ${{ secrets.MSSQL_HOST }}
+      MSSQL_DATABASE: ${{ secrets.MSSQL_DATABASE }}
+      MSSQL_USER: ${{ secrets.MSSQL_USER }}
+      MSSQL_PASSWORD: ${{ secrets.MSSQL_PASSWORD }}
+
+  integration-test:
+    needs: build
+    uses: ./.github/workflows/job-integration-test.yml
+    with:
+      branch: ${{ inputs.branch || github.head_ref || github.ref_name }}
+    secrets:
+      KEY_SSH: ${{ secrets.KEY_SSH }}
+      MSSQL_HOST: ${{ secrets.MSSQL_HOST }}
+      MSSQL_DATABASE: ${{ secrets.MSSQL_DATABASE }}
+      MSSQL_USER: ${{ secrets.MSSQL_USER }}
+      MSSQL_PASSWORD: ${{ secrets.MSSQL_PASSWORD }}

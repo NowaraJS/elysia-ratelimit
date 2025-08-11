@@ -1,0 +1,59 @@
+name: job-unit-test
+run-name: "[job-unit-test] ${{ inputs.branch }}"
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        description: 'Branch to checkout'
+        required: true
+        type: string
+    secrets:
+      KEY_SSH:
+        required: true
+      MSSQL_HOST:
+        required: true
+      MSSQL_DATABASE:
+        required: true
+      MSSQL_USER:
+        required: true
+      MSSQL_PASSWORD:
+        required: true
+
+jobs:
+  run-unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    env:
+      MSSQL_HOST: ${{ secrets.MSSQL_HOST }}
+      MSSQL_DATABASE: ${{ secrets.MSSQL_DATABASE }}
+      MSSQL_USER: ${{ secrets.MSSQL_USER }}
+      MSSQL_PASSWORD: ${{ secrets.MSSQL_PASSWORD }}
+    steps:
+      - name: Verify required secrets
+        run: |
+          echo "🔍 Verifying required secrets for unit test job..."
+          if [ -z "${{ secrets.KEY_SSH }}" ]; then
+            echo "❌ KEY_SSH secret is missing"
+            exit 1
+          fi
+          echo "✅ All required secrets are present"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+          fetch-depth: 0
+          ssh-key: ${{ secrets.KEY_SSH }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.15
+
+      - name: Install Dependencies
+        run: bun install
+
+      - name: Run Unit Tests and update Summary
+        id: unit_test
+        run: bun run test:unit

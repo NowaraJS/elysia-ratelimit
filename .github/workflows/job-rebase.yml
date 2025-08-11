@@ -1,4 +1,5 @@
-name: Rebase
+name: job-rebase
+run-name: "[job-rebase] ${{ inputs.from }} -> ${{ inputs.to }}"
 
 on:
   workflow_call:
@@ -27,11 +28,24 @@ on:
         required: true
         type: string
 
-
 jobs:
-  rebase:
+  rebase-branches:
+    name: Rebase Branches
     runs-on: ubuntu-latest
     steps:
+      - name: Verify required secrets
+        run: |
+          echo "🔍 Verifying required secrets for rebase job..."
+          if [ -z "${{ secrets.KEY_SSH }}" ]; then
+            echo "❌ KEY_SSH secret is missing"
+            exit 1
+          fi
+          if [ -z "${{ secrets.GIT_EMAIL }}" ]; then
+            echo "❌ GIT_EMAIL secret is missing"
+            exit 1
+          fi
+          echo "✅ All required secrets are present"
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
