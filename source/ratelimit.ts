@@ -32,7 +32,7 @@ import type { RateLimitOptions } from './types/ratelimitOptions';
  * // Create and configure the application with rate limiting
  * const app = new Elysia()
  *   .use(rateLimit({
- *     redis,
+ *     store: redis,
  *     limit: 100,           // 100 requests
  *     window: 60,           // per minute
  *   }))
@@ -44,15 +44,15 @@ import type { RateLimitOptions } from './types/ratelimitOptions';
  * app.listen(3000);
  * ```
  */
-export const ratelimit = ({ redis, limit, window }: RateLimitOptions) => {
-	const store = redis
-		? redis
-		: new MemoryStore();
+export const ratelimit = ({ store, limit, window }: RateLimitOptions) => {
+	const storeInstance = store === ':memory:' || !store
+		? new MemoryStore()
+		: store;
 
 	return new Elysia({
 		name: 'rateLimit',
 		seed: {
-			redis,
+			store,
 			limit,
 			window
 		}
@@ -65,15 +65,15 @@ export const ratelimit = ({ redis, limit, window }: RateLimitOptions) => {
 
 			const key = `ratelimit:${ip}`;
 
-			const current = await store.get(key);
+			const current = await storeInstance.get(key);
 			const count = current ? parseInt(current) : 0;
 
 			if (count === 0)
-				await store.setex(key, window, '1');
+				await storeInstance.setex(key, window, '1');
 			else
-				await store.incr(key);
+				await storeInstance.incr(key);
 
-			const newCount = await store.get(key);
+			const newCount = await storeInstance.get(key);
 			const currentCount = newCount ? parseInt(newCount) : 0;
 
 			if (currentCount > limit) {
@@ -85,7 +85,7 @@ export const ratelimit = ({ redis, limit, window }: RateLimitOptions) => {
 						limit,
 						window,
 						remaining: 0,
-						reset: await store.ttl(key)
+						reset: await storeInstance.ttl(key)
 					}
 				});
 			}
@@ -93,7 +93,7 @@ export const ratelimit = ({ redis, limit, window }: RateLimitOptions) => {
 			set.headers = {
 				'X-RateLimit-Limit': limit.toString(),
 				'X-RateLimit-Remaining': Math.max(0, limit - currentCount).toString(),
-				'X-RateLimit-Reset': (await store.ttl(key)).toString()
+				'X-RateLimit-Reset': (await storeInstance.ttl(key)).toString()
 			};
 		})
 		.as('global');
