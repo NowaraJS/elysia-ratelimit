@@ -1,4 +1,5 @@
-name: Create GitHub Release
+name: job-create-github-release
+run-name: "[job-create-github-release] ${{ inputs.branch }} - ${{ inputs.versionSuffix || 'stable' }} - ${{ inputs.isPrerelease }}"
 
 on:
   workflow_call:
@@ -26,24 +27,45 @@ on:
         required: true
     outputs:
       tag:
-        value: ${{ jobs.publish-release.outputs.tag }}
+        value: ${{ jobs.create-release.outputs.tag }}
         description: 'The tag name of the release'
       changelog:
-        value: ${{ jobs.publish-release.outputs.changelog }}
+        value: ${{ jobs.create-release.outputs.changelog }}
         description: 'The changelog generated for the release'
       isPrerelease:
-        value: ${{ jobs.publish-release.outputs.isPrerelease }}
+        value: ${{ jobs.create-release.outputs.isPrerelease }}
         description: 'Indicates if the release is a prerelease or not'
 
 jobs:
-  publish-release:
-    name: Publish Release
+  create-release:
+    name: Create Release
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.latest_tag.outputs.tag_name }}
       changelog: ${{ steps.changelog_diff.outputs.changelog }}
       isPrerelease: ${{ inputs.isPrerelease }}
     steps:
+      - name: Verify required secrets
+        run: |
+          echo "🔍 Verifying required secrets..."
+          if [ -z "${{ secrets.KEY_SSH }}" ]; then
+            echo "❌ KEY_SSH secret is missing"
+            exit 1
+          fi
+          if [ -z "${{ secrets.KEY_GPG }}" ]; then
+            echo "❌ KEY_GPG secret is missing"
+            exit 1
+          fi
+          if [ -z "${{ secrets.GIT_EMAIL }}" ]; then
+            echo "❌ GIT_EMAIL secret is missing"
+            exit 1
+          fi
+          if [ -z "${{ secrets.GH_TOKEN }}" ]; then
+            echo "❌ GH_TOKEN secret is missing"
+            exit 1
+          fi
+          echo "✅ All required secrets are present"
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -110,6 +132,20 @@ jobs:
           LATEST_TAG=$(git describe --tags --abbrev=0)
           git tag -v "$LATEST_TAG"
 
+      - name: Extract latest tag
+        id: latest_tag
+        run: echo "tag_name=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+
+      - name: Validate tag format
+        run: |
+          TAG="${{ steps.latest_tag.outputs.tag_name }}"
+          echo "🔍 Validating tag format: $TAG"
+          if ! echo "$TAG" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+'; then
+            echo "❌ Tag format is invalid: $TAG (expected format: v1.2.3)"
+            exit 1
+          fi
+          echo "✅ Tag format is valid: $TAG"
+
       - name: Extract Changelog additions
         id: changelog_diff
         run: |
@@ -117,10 +153,6 @@ jobs:
           git diff ${PREV_COMMIT} HEAD --unified=0 CHANGELOG.md | grep '^+' | grep -v '++' | sed 's/^+//' > temp.md
           echo "Changelog additions between previous and current commit:"
           cat temp.md
-
-      - name: Extract latest tag
-        id: latest_tag
-        run: echo "tag_name=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         env:
