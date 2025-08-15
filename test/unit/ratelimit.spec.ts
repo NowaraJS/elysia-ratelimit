@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { Redis, type RedisKey } from 'ioredis';
 
-import { ratelimit } from '#/ratelimit';
+import { rateLimit } from '#/rateLimit';
 
 class MockRedis extends Redis {
 	private readonly _data: Map<RedisKey, string>;
@@ -94,7 +94,7 @@ describe('rateLimit - Redis Store', () => {
 		const limit = 5;
 		const window = 60;
 
-		const app = ratelimit({ store: redis, limit, window })
+		const app = rateLimit({ store: redis, limit, window })
 			.get('/test', () => 'OK');
 
 		const ip = '127.0.0.1';
@@ -115,7 +115,7 @@ describe('rateLimit - Redis Store', () => {
 			headers: { 'x-forwarded-for': ip }
 		}));
 		expect(blockedResponse.status).toBe(429);
-		expect(await blockedResponse.text()).toEqual('elysia.ratelimit.error.exceeded');
+		expect(await blockedResponse.text()).toEqual('elysia.rateLimit.error.exceeded');
 	});
 
 	test('should handle different IP extraction methods and maintain separate counters', async () => {
@@ -123,7 +123,7 @@ describe('rateLimit - Redis Store', () => {
 		const limit = 5;
 		const window = 60;
 
-		const app = ratelimit({ store: redis, limit, window })
+		const app = rateLimit({ store: redis, limit, window })
 			.get('/test', () => 'OK');
 
 		// Test x-forwarded-for header
@@ -160,7 +160,7 @@ describe('rateLimit - Redis Store', () => {
 		const limit = 5;
 		const window = 60;
 
-		const app = ratelimit({ store: redis, limit, window })
+		const app = rateLimit({ store: redis, limit, window })
 			.get('/test', () => 'OK');
 
 		const testCases = [
@@ -190,7 +190,7 @@ describe('rateLimit - Redis Store', () => {
 		const limit = 5;
 		const window = 60;
 
-		const app = ratelimit({ store: redis, limit, window })
+		const app = rateLimit({ store: redis, limit, window })
 			.get('/test', () => 'OK');
 
 		// Test concurrent requests from different IPs
@@ -224,7 +224,7 @@ describe('rateLimit - Redis Store', () => {
 		const redis = new MockRedis();
 
 		// Test very low limit
-		const lowLimitApp = ratelimit({ store: redis, limit: 1, window: 60 })
+		const lowLimitApp = rateLimit({ store: redis, limit: 1, window: 60 })
 			.get('/test', () => 'Low limit test');
 
 		const ip1 = '198.51.100.200';
@@ -240,7 +240,7 @@ describe('rateLimit - Redis Store', () => {
 		expect(response2.status).toBe(429);
 
 		// Test high limit
-		const highLimitApp = ratelimit({ store: redis, limit: 1000, window: 60 })
+		const highLimitApp = rateLimit({ store: redis, limit: 1000, window: 60 })
 			.get('/test', () => 'High limit test');
 
 		const ip2 = '203.0.113.250';
@@ -260,7 +260,7 @@ describe('rateLimit - Redis Store', () => {
 		const limit = 5;
 		const window = 60;
 
-		const app = ratelimit({ store: redis, limit, window })
+		const app = rateLimit({ store: redis, limit, window })
 			.get('/test', () => 'OK');
 
 		const testIp = '172.16.254.1';
@@ -284,7 +284,7 @@ describe('rateLimit - Redis Store', () => {
 		const limit = 5;
 		const window = 60;
 
-		const app = ratelimit({ store: redis, limit, window })
+		const app = rateLimit({ store: redis, limit, window })
 			.get('/test', () => 'GET OK')
 			.post('/test', ({ body }) => ({ received: body }));
 
@@ -323,7 +323,7 @@ describe('rateLimit - Redis Store', () => {
 		const limit = 5;
 		const window = 1; // 1 second window
 
-		const app = ratelimit({ store: redis, limit, window })
+		const app = rateLimit({ store: redis, limit, window })
 			.get('/test', () => 'OK');
 
 		const ip = '192.168.1.100';
@@ -352,7 +352,7 @@ describe('rateLimit - Memory Store', () => {
 		const limit = 3;
 		const window = 60;
 
-		const app = ratelimit({ store: ':memory:', limit, window })
+		const app = rateLimit({ store: ':memory:', limit, window })
 			.get('/test', () => 'OK');
 
 		const ip = '127.0.0.1';
@@ -371,14 +371,14 @@ describe('rateLimit - Memory Store', () => {
 			headers: { 'x-forwarded-for': ip }
 		}));
 		expect(blockedResponse.status).toBe(429);
-		expect(await blockedResponse.text()).toEqual('elysia.ratelimit.error.exceeded');
+		expect(await blockedResponse.text()).toEqual('elysia.rateLimit.error.exceeded');
 	});
 
 	test('should work with default memory store (no store specified)', async () => {
 		const limit = 2;
 		const window = 60;
 
-		const app = ratelimit({ limit, window })
+		const app = rateLimit({ limit, window })
 			.get('/test', () => 'OK');
 
 		const ip = '192.168.1.1';
@@ -406,7 +406,7 @@ describe('rateLimit - Memory Store', () => {
 		const limit = 2;
 		const window = 60;
 
-		const app = ratelimit({ store: ':memory:', limit, window })
+		const app = rateLimit({ store: ':memory:', limit, window })
 			.get('/test', () => 'OK');
 
 		const ip1 = '10.0.0.1';

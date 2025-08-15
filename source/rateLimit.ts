@@ -1,9 +1,9 @@
 import { HttpError } from '@nowarajs/error';
 import { Elysia } from 'elysia';
 
-import { RATE_LIMIT_ERROR_KEYS } from './enums/ratelimitErrorKeys';
+import { RATE_LIMIT_ERROR_KEYS } from './enums/rateLimitErrorKeys';
 import { MemoryStore } from './stores/memoryStore';
-import type { RateLimitOptions } from './types/ratelimitOptions';
+import type { RateLimitOptions } from './types/rateLimitOptions';
 
 /**
  * The `rateLimitPlugin` provides rate limiting capabilities for Elysia applications,
@@ -44,7 +44,7 @@ import type { RateLimitOptions } from './types/ratelimitOptions';
  * app.listen(3000);
  * ```
  */
-export const ratelimit = ({ store, limit, window }: RateLimitOptions) => {
+export const rateLimit = ({ store, limit, window }: RateLimitOptions) => {
 	const storeInstance = store === ':memory:' || !store
 		? new MemoryStore()
 		: store;
