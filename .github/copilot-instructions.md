@@ -1,93 +1,62 @@
+---
+applyTo: '**'
+---
 ## Development Workflow
-- **Build:** `bun run build`
-- **Test:** `bun run test`, `bun run test:unit`, `bun run test:integration`
-- **Lint:** `bun run lint` (auto-fix: `bun run fix-lint`)
-- **Docs:** `bun run docs`
+- Build: bun run build
+- Test: bun run test, bun run test:unit, bun run test:integration
+- Lint: bun run lint (auto-fix: bun run fix-lint)
+- Docs: bun run docs
 
-## Code Standards & Guidelines
+## Code Standards and Guidelines
 
-### Required Before Each Commit
-- Run `bun run lint` and fix all errors and warnings.
-- Run unit `bun run test:unit` or integration `bun run test:integration` tests related to the changes made.
-- Ensure documentation is updated if public APIs or complex logic change.
+ ##Required Before Each Commit
+- Run bun run lint and fix all errors and warnings
+- Run relevant unit or integration tests
+- Update documentation if public APIs or complex logic change
 
-### TypeScript & Project Conventions
-1. **Use underscore prefix for private or non-exported elements**  
-   (fields, methods, functions, variables):  
-   e.g., `_privateMethod`, `_privateVariable`
-2. **Always specify visibility modifiers**  
-   (`private`, `protected`, `public`) for class methods and properties.  
-   Include `readonly`, `override`, and other relevant modifiers when applicable.
-3. **Naming conventions:**  
-   - `camelCase` for variables, functions, and methods  
-   - `PascalCase` for classes, interfaces, and types  
-   - `SCREAMING_CASE` for primitive constants
-4. **Explicit typing:**  
-   - Always specify types for variables, function parameters, and return types  
-   - Never use `any` – prefer `unknown` if type cannot be determined  
-   - Use type assertions **only when absolutely necessary**  
-   - Prefer `interface` over `type` alias for extendable object types
-5. **Documentation:**  
-   - Document all functions, methods, and code blocks thoroughly with comments  
-   - For TypeScript, use **TSDoc** style comments  
-   - Always explain purpose, parameters, return values, and behavior  
-   - **Only document code when specifically requested**; otherwise, avoid redundant comments  
-   - For TSdoc `@throws`, use the format:  
-     `@throws ({@link Type}) – {description}`  
-   - When documenting an object or interface, **do not** use `@param`; instead, write a comment above each property
-6. **Control structures:**  
-   - For `if`, `for`, etc., with only a single statement in the body, omit curly braces
-7. **Path Aliases:**  
-   - Use `#/` for internal imports (for example, `#/errors/baseError`). Do not import "barrel" files; they are only used as entry points.
-8. **Export Pattern:**  
-   - Each directory should have an `index.ts` that re-exports public items  
-   - Types are exported in a separate `types/index.ts`
-9. **Testing:**  
-   - Write unit tests for all new features  
-   - Place tests in the corresponding path under `test/`, matching the structure of `source/`  
-   - Use Bun's test runner, with `describe` and `test` blocks  
-   - For database/external integrations, use the integration tests directory  
-   - Prefer table-driven tests when possible (parameterized cases)
-10. **Architecture:**  
-    - Maintain existing modular structure and directory organization  
-    - Use dependency injection patterns where appropriate  
-    - Document all public APIs and any complex or non-trivial logic
+## TypeScript and Project Conventions
+1. Use underscore prefix for private or non-exported elements (e.g., _privateMethod)
+2. Always specify visibility modifiers (private, protected, public), plus readonly, override, etc. when applicable
+3. Naming conventions: camelCase for variables/functions/methods; PascalCase for classes/interfaces/types; SCREAMING_CASE for constants
+4. Explicit typing: Always specify types for variables, parameters, and return values; never use any; prefer unknown if type cannot be determined; prefer interface over type alias for extendable objects
+5. Documentation: Use TSDoc style; explain purpose, parameters, return values, and behavior; only document code when requested; for @throws, use format "@throws ({@link Type}) – description"; for object/interface properties, write comment above each property instead of @param
+6. Control structures: Omit curly braces for single-statement bodies
+7. Path Aliases: Use #/ for internal imports; do not import barrel files except as entry points
+8. Export Pattern: Each directory has index.ts re-exporting public items; types exported in types/index.ts
+9. Testing: Write unit tests for new features; tests mirror source/ structure; use Bun's test runner; integration tests for DB/external systems; prefer table-driven tests
+10. Architecture: Maintain modular structure; use dependency injection when appropriate; document public APIs and complex logic
+11. Function style: Class methods use standard method syntax; helpers/callbacks/HOFs prefer arrow functions unless function syntax is required
 
 ## Contribution Principles
-1. **Follow TypeScript best practices and idiomatic patterns**
-2. **Maintain existing code structure and modular organization**
-3. **Keep the developer experience (DX) in mind**
-4. **Keep pull requests focused and well-documented with TsDoc (with comments if asked)**
-5. **Commit different types of changes separately (features, fixes, refactors, etc.); for example, do not include tests in the same commit as features**
+1. Follow TypeScript best practices and idiomatic patterns
+2. Maintain existing code structure and modular organization
+3. Keep developer experience in mind
+4. Keep pull requests focused and well-documented (with TsDoc if asked)
+5. Commit different types of changes separately; avoid mixing tests and features in one commit
 
 ## Commit Message Convention (Conventional Commits + Emoji)
+Format: <type>(<emoji>): [summary up to 72 chars]
+(blank line, then context or description)
 
-Format:  
-`<type>(<emoji>): [summary up to 72 chars]`  
-(blank line, then context or description in markdown)
+Types:
+feat 🚀 – New features
+fix 🔧 – Bug fixes
+perf ⚡ – Performance improvements
+refactor 🧹 – Refactoring
+build 📦 – Build tools / dependency changes
+types 🌊 – Type definitions
+chore 🦉 – Maintenance, non-code/test changes
+examples 🏀 – Example updates
+docs 📖 – Documentation changes
+test 🧪 – Test code updates
+style 🎨 – Style/formatting only
+ci 🤖 – CI/CD configuration
 
-| Type     | Emoji | Use for                            |
-|----------|-------|------------------------------------|
-| feat     | 🚀    | New features                       |
-| fix      | 🔧    | Bug fixes                          |
-| perf     | ⚡    | Performance improvements           |
-| refactor | 🧹    | Refactoring code                   |
-| build    | 📦    | Build tools / dependency changes   |
-| types    | 🌊    | Type definitions                   |
-| chore    | 🦉    | Maintenance, non-code/test changes |
-| examples | 🏀    | Example updates                    |
-| docs     | 📖    | Documentation changes              |
-| test     | 🧪    | Test code updates                  |
-| style    | 🎨    | Style/formatting only              |
-| ci       | 🤖    | CI/CD configuration                |
+Example:
+feat(🚀): add advanced repository filtering operators
 
-**Example:**
-```markdown
-feat(🚀): [add my super feature]
+Features:
+- Added $eq, $like, $between filtering operators to repository
 
-## Features
-- Implemented a new super feature that does amazing things
-
-## Description
-This feature allows users to do X, Y, and Z. It improves the overall user experience by...
-```
+Description:
+Allows advanced querying and filtering of database records using the repository pattern.
