@@ -1,4 +1,28 @@
 
+## v1.2.5
+
+[compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.2.4...v1.2.5)
+
+### 📖 Documentation
+
+- **📖:** [add Contributor Covenant Code of Conduct] ([33f675e](https://github.com/NowaraJS/elysia-ratelimit/commit/33f675e))
+- **📖:** [add contributing guidelines to CONTRIBUTING.md] ([5ea66db](https://github.com/NowaraJS/elysia-ratelimit/commit/5ea66db))
+- **📖:** [update package.json description and repository info] ([58afd17](https://github.com/NowaraJS/elysia-ratelimit/commit/58afd17))
+- **📖:** [add SECURITY.md for vulnerability reporting and version support] ([46ff469](https://github.com/NowaraJS/elysia-ratelimit/commit/46ff469))
+
+### 📦 Build
+
+- **📦:** [Update dependencies in package.json] ([8d1bd1c](https://github.com/NowaraJS/elysia-ratelimit/commit/8d1bd1c))
+
+### 🦉 Chore
+
+- **🦉:** [rename MIT License file with explicit .md] ([d78f67d](https://github.com/NowaraJS/elysia-ratelimit/commit/d78f67d))
+- **🦉:** [update contact email in issue template] ([4afede0](https://github.com/NowaraJS/elysia-ratelimit/commit/4afede0))
+
+### ❤️ Contributors
+
+- Komiroko <komiriko@pm.me>
+
 ## v1.2.4
 
 [compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.2.3...v1.2.4)
