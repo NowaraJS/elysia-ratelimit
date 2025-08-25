@@ -5,6 +5,8 @@
       "name": "template-package-npm",
       "devDependencies": {
         "@eslint/js": "latest",
+        "@nowarajs/error": "latest",
+        "@nowarajs/kv-store": "latest",
         "@stylistic/eslint-plugin": "latest",
         "@types/bun": "latest",
         "eslint": "latest",
@@ -13,7 +15,8 @@
         "typescript-eslint": "latest",
       },
       "peerDependencies": {
-        "@nowarajs/error": "latest",
+        "@nowarajs/error": "^1.1.8",
+        "@nowarajs/kv-store": "^1.1.1",
         "elysia": "latest",
         "ioredis": "latest",
       },
@@ -54,7 +57,9 @@
 
     "@nodelib/fs.walk": ["@nodelib/fs.walk@1.2.8", "", { "dependencies": { "@nodelib/fs.scandir": "2.1.5", "fastq": "^1.6.0" } }, "sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg=="],
 
-    "@nowarajs/error": ["@nowarajs/error@1.1.7", "", {}, "sha512-GugNDBt2x3mGFE/oYb545lGeQsaOgvdzbgNPfJjYQReooybOYP0pg4PCT9DzaRe+vCIebwtHZnHmKdaVk638HQ=="],
+    "@nowarajs/error": ["@nowarajs/error@1.1.8", "", {}, "sha512-0v+dSe5vpSuRIFgKO4CpOXq0xdOhbgZRIlh+4BfJhiwbQBJU2r5Z4eooViAo2Ta0sp7OMvN7fhM4rCqZWhXEKw=="],
+
+    "@nowarajs/kv-store": ["@nowarajs/kv-store@1.1.1", "", { "peerDependencies": { "@nowarajs/error": "^1.1.8", "ioredis": "latest" }, "optionalPeers": ["ioredis"] }, "sha512-uN66ChreD2ZKUZ5y+ysLozAN++lkYPZTeYIKuzGcphepwysEgYpDEksUwJRxkKy6hw3iRLU0IGheWVoqm+IWcA=="],
 
     "@sinclair/typebox": ["@sinclair/typebox@0.34.38", "", {}, "sha512-HpkxMmc2XmZKhvaKIZZThlHmx1L0I/V1hWK1NubtlFnr6ZqdiOpV72TKudZUNQjZNsyDBay72qFEhEvb+bcwcA=="],
 
