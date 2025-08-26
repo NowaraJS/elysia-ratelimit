@@ -1,5 +1,5 @@
+import { MemoryStore } from '@nowarajs/kv-store/memory';
 import { describe, expect, test } from 'bun:test';
-import { MemoryStore } from '@nowarajs/kv-store';
 
 import { rateLimit } from '#/rateLimit';
 

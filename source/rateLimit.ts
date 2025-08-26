@@ -1,5 +1,5 @@
 import { HttpError } from '@nowarajs/error';
-import { MemoryStore } from '@nowarajs/kv-store';
+import { MemoryStore } from '@nowarajs/kv-store/memory';
 import { Elysia } from 'elysia';
 
 import { RATE_LIMIT_ERROR_KEYS } from './enums/rateLimitErrorKeys';
