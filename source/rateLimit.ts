@@ -28,6 +28,7 @@ import type { RateLimitOptions } from './types/rateLimitOptions';
  *
  * const app = new Elysia()
  *   .use(rateLimit({
+ *     store: ':memory:',    // Use in-memory store
  *     limit: 100,           // 100 requests
  *     window: 60,           // per minute
  *   }))
