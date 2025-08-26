@@ -1,26 +1,14 @@
-import type { Redis } from 'ioredis';
+import type { KvStore } from '@nowarajs/kv-store/types';
 
-/**
- * Options to configure the rate limit plugin.
- *
- * @example
- * ```ts
- * const options: RateLimitOptions = {
- *   store: redisInstance, // Your Redis instance
- *   limit: 100,          // Allow 100 requests
- *   window: 60,          // Per 60 seconds
- * };
- * ```
- */
 export interface RateLimitOptions {
 	/**
 	 * Storage backend for rate limit data.
 	 *
 	 * - If not specified, defaults to in-memory storage
 	 * - Use ':memory:' to explicitly specify in-memory storage
-	 * - Provide a Redis instance for persistent distributed storage
+	 * - Provide a KvStore instance for persistent distributed storage
 	 */
-	readonly store?: ':memory:' | Redis;
+	readonly store?: ':memory:' | KvStore;
 	/**
 	 * Maximum number of requests allowed in the time window.
 	 *
