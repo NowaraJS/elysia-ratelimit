@@ -1,8 +1,8 @@
 import { HttpError } from '@nowarajs/error';
+import { MemoryStore } from '@nowarajs/kv-store';
 import { Elysia } from 'elysia';
 
 import { RATE_LIMIT_ERROR_KEYS } from './enums/rateLimitErrorKeys';
-import { MemoryStore } from './stores/memoryStore';
 import type { RateLimitOptions } from './types/rateLimitOptions';
 
 /**
@@ -21,26 +21,42 @@ import type { RateLimitOptions } from './types/rateLimitOptions';
  * @returns An {@link Elysia} plugin that adds rate limiting functionality
  *
  * @example
+ * Basic usage with default in-memory store
  * ```ts
- * // Create Redis instance
- * const redis = new Redis({
- *   host: 'localhost',
- *   port: 6379
- * });
- * await redis.connect();
+ * import { rateLimit } from '@nowarajs/elysia-ratelimit';
+ * import { Elysia } from 'elysia';
  *
- * // Create and configure the application with rate limiting
  * const app = new Elysia()
  *   .use(rateLimit({
- *     store: redis,
  *     limit: 100,           // 100 requests
  *     window: 60,           // per minute
  *   }))
- *   .get('/public-api', () => {
- *     return { success: true, message: 'This endpoint is rate limited' };
- *   });
+ *   .get('/api/endpoint', () => ({ message: 'Hello World' }));
  *
- * // Start the server
+ * app.listen(3000);
+ * ```
+ *
+ * @example
+ * Using Redis store for distributed rate limiting
+ * ```ts
+ * import { IoRedisStore } from '@nowarajs/kv-store';
+ * import { rateLimit } from '@nowarajs/elysia-ratelimit';
+ * import { Elysia } from 'elysia';
+ *
+ * const redisStore = new IoRedisStore({
+ *   host: 'localhost',
+ *   port: 6379
+ * });
+ * await redisStore.connect();
+ *
+ * const app = new Elysia()
+ *   .use(rateLimit({
+ *     store: redisStore,
+ *     limit: 1000,          // 1000 requests
+ *     window: 3600,         // per hour
+ *   }))
+ *   .get('/api/endpoint', () => ({ message: 'Hello World' }));
+ *
  * app.listen(3000);
  * ```
  */
@@ -65,18 +81,19 @@ export const rateLimit = ({ store, limit, window }: RateLimitOptions) => {
 
 			const key = `ratelimit:${ip}`;
 
-			const current = await storeInstance.get(key);
-			const count = current ? parseInt(current) : 0;
+			const count = await storeInstance.get<number>(key);
 
-			if (count === 0)
-				await storeInstance.setex(key, window, '1');
-			else
-				await storeInstance.incr(key);
+			let newCount: number;
+			if (count === null) {
+				// First request - set counter to 1 with TTL
+				await storeInstance.set(key, 1, window);
+				newCount = 1;
+			} else {
+				// Increment existing counter
+				newCount = await storeInstance.increment(key);
+			}
 
-			const newCount = await storeInstance.get(key);
-			const currentCount = newCount ? parseInt(newCount) : 0;
-
-			if (currentCount > limit) {
+			if (newCount > limit) {
 				set.status = 429;
 				throw new HttpError({
 					message: RATE_LIMIT_ERROR_KEYS.RATE_LIMIT_EXCEEDED,
@@ -92,7 +109,7 @@ export const rateLimit = ({ store, limit, window }: RateLimitOptions) => {
 
 			set.headers = {
 				'X-RateLimit-Limit': limit.toString(),
-				'X-RateLimit-Remaining': Math.max(0, limit - currentCount).toString(),
+				'X-RateLimit-Remaining': Math.max(0, limit - newCount).toString(),
 				'X-RateLimit-Reset': (await storeInstance.ttl(key)).toString()
 			};
 		})
