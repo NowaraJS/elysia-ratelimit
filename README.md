@@ -15,51 +15,40 @@
 
 ## 📝 Description
 
-> A powerful rate limiting plugin for Elysia applications with Redis backend support.
+> A powerful rate limiting plugin for Elysia applications with flexible storage backend support.
 
-**Elysia Rate Limit** provides comprehensive rate limiting capabilities to protect your Elysia APIs from excessive use and potential abuse. It tracks request rates by client IP address and enforces configurable limits based on a sliding time window approach using Redis for distributed rate limiting.
+**Elysia Rate Limit** provides comprehensive rate limiting capabilities to protect your Elysia APIs from excessive use and potential abuse. It tracks request rates by client IP address and enforces configurable limits based on a fixed time window approach. The plugin supports multiple storage backends through the `@nowarajs/kv-store` ecosystem, including in-memory storage for development and Redis for distributed production environments.
 
 ## ✨ Features
 
 - 🔒 **IP-based Rate Limiting**: Automatically tracks requests by client IP
-- 📊 **Sliding Window**: Uses sliding window algorithm for accurate rate limiting
-- 🚀 **Redis Backend**: Distributed rate limiting with Redis support
+- 📊 **Fixed Window**: Uses fixed window algorithm for predictable rate limiting
+- 🏪 **Multiple Storage Backends**: Support for in-memory and Redis storage via @nowarajs/kv-store
 - 📈 **Standard Headers**: Adds X-RateLimit-* headers for client awareness
 - ⚡ **High Performance**: Optimized for minimal latency impact
 - 🛠️ **Easy Integration**: Simple plugin architecture for Elysia
 - 🎯 **Configurable**: Flexible limits and time windows
+- 🔄 **Development Ready**: In-memory storage for local development
 
 ## 🔧 Installation
 
 ```bash
-bun add @nowarajs/elysia-ratelimit @nowarajs/error ioredis elysia
+bun add @nowarajs/elysia-ratelimit @nowarajs/error @nowarajs/kv-store elysia
 ```
-
-> **Note**: This package requires Redis and the `ioredis` client library.
-
 ## ⚙️ Usage
 
-### Basic Setup
+### Basic Setup (In-Memory Store)
 
 ```ts
 import { Elysia } from 'elysia';
-import { Redis } from 'ioredis';
-import { ratelimit } from '@nowarajs/elysia-ratelimit';
+import { rateLimit } from '@nowarajs/elysia-ratelimit';
 
-// Create Redis instance
-const redis = new Redis({
-	host: 'localhost',
-	port: 6379
-});
-await redis.connect();
-
-// Create application with rate limiting
+// Create application with rate limiting (uses in-memory store by default)
 const app = new Elysia()
-	.use(ratelimit({
-		redis,
+	.use(rateLimit({
+		// or u can set store: ':memory:' explicitly
 		limit: 100,           // 100 requests
 		window: 60,           // per minute (60 seconds)
-		message: 'Too many requests, please try again later.'
 	}))
 	.get('/api/data', () => {
 		return { success: true, message: 'This endpoint is rate limited' };
@@ -68,37 +57,41 @@ const app = new Elysia()
 app.listen(3000);
 ```
 
-### Configuration Options
+### Redis Store Setup (Production)
 
 ```ts
-interface RateLimitOptions {
-	redis: Redis;           // Redis instance for storage
-	limit: number;          // Maximum requests allowed
-	window: number;         // Time window in seconds
-	message?: string;       // Custom error message (optional)
-}
+import { Elysia } from 'elysia';
+import { IoRedisStore } from '@nowarajs/kv-store';
+import { rateLimit } from '@nowarajs/elysia-ratelimit';
+
+// Create Redis store instance
+const redisStore = new IoRedisStore({
+	host: 'localhost',
+	port: 6379
+});
+await redisStore.connect();
+
+// Create application with Redis-backed rate limiting
+const app = new Elysia()
+	.use(rateLimit({
+		store: redisStore,
+		limit: 100,           // 100 requests
+		window: 60,           // per minute (60 seconds)
+	}))
+	.get('/api/data', () => {
+		return { success: true, message: 'This endpoint is rate limited' };
+	});
+
+app.listen(3000);
 ```
 
-### Advanced Usage
+### Storage Options
 
-```ts
-// Different rate limits for different routes
-const app = new Elysia()
-	.use(ratelimit({
-		redis,
-		limit: 1000,    // Higher limit for general API
-		window: 3600    // Per hour
-	}))
-	.group('/auth', (app) => 
-		app
-			.use(rateLimit({
-				redis,
-				limit: 5,     // Stricter limit for auth endpoints
-				window: 300   // Per 5 minutes
-			}))
-			.post('/login', loginHandler)
-			.post('/register', registerHandler)
-	);
+| Store Type | Usage | Best For |
+|------------|-------|----------|
+| Default (`:memory:`) | `rateLimit({ limit: 100, window: 60 })` | Development, single instance |
+| Explicit Memory | `rateLimit({ store: new MemoryStore(), ... })` | When you need store reference |
+| Redis Store | `rateLimit({ store: redisStore, ... })` | Production, distributed systems |
 ```
 
 ## 📊 Rate Limit Headers
