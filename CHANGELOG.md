@@ -1,4 +1,24 @@
 
+## v1.3.3
+
+[compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.3.2...v1.3.3)
+
+### 📦 Build
+
+- **📦:** [Update dependencies in package.json and bun.lock] ([107a38c](https://github.com/NowaraJS/elysia-ratelimit/commit/107a38c))
+
+### 🦉 Chore
+
+- **🦉:** [Update .npmignore for better file management] ([59818ad](https://github.com/NowaraJS/elysia-ratelimit/commit/59818ad))
+
+### 🤖 CI
+
+- **🤖:** [Remove CHANGELOG.md before publishing to NPM] ([691baae](https://github.com/NowaraJS/elysia-ratelimit/commit/691baae))
+
+### ❤️ Contributors
+
+- Komiroko <komiriko@pm.me>
+
 ## v1.3.2
 
 [compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.3.1...v1.3.2)
