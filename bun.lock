@@ -59,7 +59,7 @@
 
     "@nowarajs/error": ["@nowarajs/error@1.3.0", "", {}, "sha512-VAGlGXrz18Z3nlzNN5feNLJHw83TdDDL/DbuZfxwoSU4doSff1PJtJbDaAJxBBKBkQzUI+xZUEU+3Ard7J7bMw=="],
 
-    "@nowarajs/kv-store": ["@nowarajs/kv-store@1.1.3", "", { "peerDependencies": { "@nowarajs/error": "^1.1.9", "ioredis": "latest" }, "optionalPeers": ["ioredis"] }, "sha512-HD9ehVESfFIBGIzqDUMYTqsmnrsMGkthjlZBH4MWWatCmXI8Q5xqvK+frAeMjKp6QrUkEH40ZuHqQluHFLYRcA=="],
+    "@nowarajs/kv-store": ["@nowarajs/kv-store@1.1.4", "", { "peerDependencies": { "@nowarajs/error": "^1.3.0", "ioredis": "latest" }, "optionalPeers": ["ioredis"] }, "sha512-NMMtVb+V2i9zt+sThskVqsD/9EtcVVoKap/gtgrDQKxIxerEQnf3hNIqoimR/uDpz1nZDOsLzoBHJ/8ZQTPk3A=="],
 
     "@sinclair/typebox": ["@sinclair/typebox@0.34.40", "", {}, "sha512-gwBNIP8ZAYev/ORDWW0QvxdwPXwxBtLsdsJgSc7eDIRt8ubP+rxUBzPsrwnu16fgEF8Bx4lh/+mvQvJzcTM6Kw=="],
 
