@@ -1,7 +1,7 @@
 import { MemoryStore } from '@nowarajs/kv-store/memory';
 import { describe, expect, test } from 'bun:test';
 
-import { rateLimit } from '#/rateLimit';
+import { rateLimit } from '#/rate-limit';
 
 describe('rateLimit - KV Store', () => {
 	test('should handle basic rate limiting workflow', async () => {
