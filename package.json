@@ -25,7 +25,7 @@
 	"devDependencies": {
 		"@eslint/js": "^9.34.0",
 		"@nowarajs/error": "^1.3.0",
-		"@nowarajs/kv-store": "^1.1.3",
+		"@nowarajs/kv-store": "^1.1.4",
 		"@stylistic/eslint-plugin": "^5.3.1",
 		"@types/bun": "^1.2.21",
 		"elysia": "^1.3.21",
@@ -35,8 +35,8 @@
 		"typescript": "^5.9.2"
 	},
 	"peerDependencies": {
-		"@nowarajs/error": "^1.1.8",
-		"@nowarajs/kv-store": "^1.1.1",
+		"@nowarajs/error": "^1.3.0",
+		"@nowarajs/kv-store": "^1.1.4",
 		"elysia": "^1.3.20"
 	},
 	"exports": {
