@@ -1,1 +1,1 @@
-export { rateLimit } from './rateLimit';
+export { rateLimit } from './rate-limit';

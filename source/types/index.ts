@@ -1,1 +1,1 @@
-export type { RateLimitOptions } from './rateLimitOptions';
+export type { RateLimitOptions } from './rate-limit-options';
