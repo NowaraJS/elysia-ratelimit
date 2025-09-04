@@ -1,4 +1,16 @@
 
+## v1.3.5
+
+[compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.3.4...v1.3.5)
+
+### 📦 Build
+
+- **📦:** [Update @nowarajs/kv-store and @nowarajs/error dependencies] - Updated `@nowarajs/kv-store` from `^1.1.3` to `^1.1.4` in `devDependencies`. - Updated `@nowarajs/error` from `^1.1.8` to `^1.3.0` in `peerDependencies`. ([411e510](https://github.com/NowaraJS/elysia-ratelimit/commit/411e510))
+
+### ❤️ Contributors
+
+- Komiroko <komiriko@pm.me>
+
 ## v1.3.4
 
 [compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.3.3...v1.3.4)
