@@ -1,4 +1,24 @@
 
+## v1.3.4
+
+[compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.3.3...v1.3.4)
+
+### 🧹 Refactors
+
+- **🧹:** [Rename files to kebab-case and refacto BaseError V1.3] ([209f61c](https://github.com/NowaraJS/elysia-ratelimit/commit/209f61c))
+
+### 📦 Build
+
+- **📦:** [Update dependencies in package.json] ([fc262b3](https://github.com/NowaraJS/elysia-ratelimit/commit/fc262b3))
+
+### 🦉 Chore
+
+- **🦉:** [Add Dependabot configuration for package updates] ([198e8bf](https://github.com/NowaraJS/elysia-ratelimit/commit/198e8bf))
+
+### ❤️ Contributors
+
+- Komiroko <komiriko@pm.me>
+
 ## v1.3.3
 
 [compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.3.2...v1.3.3)
