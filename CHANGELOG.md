@@ -1,4 +1,24 @@
 
+## v1.4.0
+
+[compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.3.5...v1.4.0)
+
+### 🚀 Enhancements
+
+- **🚀:** [Add RATE_LIMIT_ERROR_KEYS export] ([39d1064](https://github.com/NowaraJS/elysia-ratelimit/commit/39d1064))
+
+### 📦 Build
+
+- **📦:** [Update dependencies in package.json] ## Build Changes - Updated `@eslint/js` from `^9.34.0` to `^9.35.0` - Updated `@nowarajs/error` from `^1.3.0` to `^1.3.1` - Updated `@nowarajs/kv-store` from `^1.1.4` to `^1.1.5` - Updated `@types/bun` from `^1.2.21` to `^1.2.22` - Updated `elysia` from `^1.3.21` to `^1.4.5` - Updated `eslint` from `^9.34.0` to `^9.35.0` - Updated `globals` from `^16.3.0` to `^16.4.0` - Updated `typescript-eslint` from `^8.42.0` to `^8.43.0` - Updated peer dependencies for `@nowarajs/error`, `@nowarajs/kv-store`, and `elysia` to their latest versions. ([e3f2f7f](https://github.com/NowaraJS/elysia-ratelimit/commit/e3f2f7f))
+
+### 🦉 Chore
+
+- **🦉:** [Update Dependabot schedule to weekly] ([4471e85](https://github.com/NowaraJS/elysia-ratelimit/commit/4471e85))
+
+### ❤️ Contributors
+
+- Komiroko <komiriko@pm.me>
+
 ## v1.3.5
 
 [compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.3.4...v1.3.5)
