@@ -1,4 +1,16 @@
 
+## v1.4.1
+
+[compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.4.0...v1.4.1)
+
+### 📦 Build
+
+- **📦:** [Update Dependencies] ([6efa2d9](https://github.com/NowaraJS/elysia-ratelimit/commit/6efa2d9))
+
+### ❤️ Contributors
+
+- Komiroko <komiriko@pm.me>
+
 ## v1.4.0
 
 [compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.3.5...v1.4.0)

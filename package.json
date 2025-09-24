@@ -1,6 +1,6 @@
 {
 	"name": "@nowarajs/elysia-ratelimit",
-	"version": "1.4.0",
+	"version": "1.4.1",
 	"author": "NowaraJS",
 	"description": "A rate limiting plugin for Elysia framework",
 	"type": "module",
