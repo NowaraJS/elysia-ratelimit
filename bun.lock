@@ -16,9 +16,9 @@
         "typescript-eslint": "latest",
       },
       "peerDependencies": {
-        "@nowarajs/error": "^1.3.1",
-        "@nowarajs/kv-store": "^1.1.5",
-        "elysia": "^1.4.5",
+        "@nowarajs/error": "^1.3.2",
+        "@nowarajs/kv-store": "^1.1.6",
+        "elysia": "^1.4.7",
       },
     },
   },
