@@ -1,4 +1,16 @@
 
+## v1.4.2
+
+[compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.4.1...v1.4.2)
+
+### 🔧 Fixes
+
+- **🔧:** [Correct rate limit error key format] Update the RATE_LIMIT_EXCEEDED key to use the correct format for the error key string. ([90f5af9](https://github.com/NowaraJS/elysia-ratelimit/commit/90f5af9))
+
+### ❤️ Contributors
+
+- Komiroko <komiriko@pm.me>
+
 ## v1.4.1
 
 [compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.4.0...v1.4.1)
