@@ -30,7 +30,7 @@ describe('rateLimit - KV Store', () => {
 			headers: { 'x-forwarded-for': ip }
 		}));
 		expect(blockedResponse.status).toBe(429);
-		expect(await blockedResponse.text()).toEqual('elysia.rateLimit.error.exceeded');
+		expect(await blockedResponse.text()).toEqual('elysia.rate-limit.error.exceeded');
 	});
 
 	test('should handle different IP extraction methods and maintain separate counters', async () => {
@@ -322,7 +322,7 @@ describe('rateLimit - Memory Store', () => {
 			headers: { 'x-forwarded-for': ip }
 		}));
 		expect(blockedResponse.status).toBe(429);
-		expect(await blockedResponse.text()).toEqual('elysia.rateLimit.error.exceeded');
+		expect(await blockedResponse.text()).toEqual('elysia.rate-limit.error.exceeded');
 	});
 
 	test('should work with default memory store (no store specified)', async () => {
