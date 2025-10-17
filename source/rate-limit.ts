@@ -1,5 +1,6 @@
 import { HttpError } from '@nowarajs/error';
 import { MemoryStore } from '@nowarajs/kv-store/memory';
+import type { Server } from 'bun';
 import { Elysia } from 'elysia';
 
 import { RATE_LIMIT_ERROR_KEYS } from './enums/rate-limit-error-keys';
@@ -77,7 +78,7 @@ export const rateLimit = ({ store, limit, window }: RateLimitOptions) => {
 		.onRequest(async ({ set, request, server }) => {
 			const ip = request.headers.get('x-forwarded-for')
 				|| request.headers.get('x-real-ip')
-				|| server?.requestIP(request)?.address // get IP from socket directly
+				|| (server as Server<unknown>)?.requestIP(request)?.address // get IP from socket directly
 				|| '127.0.0.1';
 
 			const key = `ratelimit:${ip}`;
