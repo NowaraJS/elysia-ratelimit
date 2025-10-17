@@ -3,7 +3,7 @@ import { describe, expect, test } from 'bun:test';
 
 import { rateLimit } from '#/rate-limit';
 
-describe('rateLimit - KV Store', () => {
+describe.concurrent('rateLimit - KV Store', () => {
 	test('should handle basic rate limiting workflow', async () => {
 		const store = new MemoryStore();
 		const limit = 5;
@@ -298,7 +298,7 @@ describe('rateLimit - KV Store', () => {
 	});
 });
 
-describe('rateLimit - Memory Store', () => {
+describe.concurrent('rateLimit - Memory Store', () => {
 	test('should work with explicit memory store configuration', async () => {
 		const limit = 3;
 		const window = 60;
