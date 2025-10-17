@@ -1,4 +1,37 @@
 
+## v1.4.3
+
+[compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.4.2...v1.4.3)
+
+### 🔧 Fixes
+
+- **🔧:** [Add temporary fix Bun 1.3 Server] ([c094ce1](https://github.com/NowaraJS/elysia-ratelimit/commit/c094ce1))
+
+### 📦 Build
+
+- **📦:** [Update devDependencies and peerDependencies in package.json] ([69cce23](https://github.com/NowaraJS/elysia-ratelimit/commit/69cce23))
+
+### 🦉 Chore
+
+- **🦉:** [Remove Dependabot configuration file] ([52c65ae](https://github.com/NowaraJS/elysia-ratelimit/commit/52c65ae))
+- **🦉:** [Add semver field to changelog types] ([5b918b1](https://github.com/NowaraJS/elysia-ratelimit/commit/5b918b1))
+
+### 🧪 Tests
+
+- **🧪:** [Convert describe blocks to concurrent for better performance] ([43f49b5](https://github.com/NowaraJS/elysia-ratelimit/commit/43f49b5))
+
+### 🎨 Styles
+
+- **🎨:** [Update ESLint configuration for improved styling rules] ([c9e1e38](https://github.com/NowaraJS/elysia-ratelimit/commit/c9e1e38))
+
+### 🤖 CI
+
+- **🤖:** [Update CI/CD workflows and actions for Bun project setup] ([729858c](https://github.com/NowaraJS/elysia-ratelimit/commit/729858c))
+
+### ❤️ Contributors
+
+- Komiroko <komiriko@pm.me>
+
 ## v1.4.2
 
 [compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.4.1...v1.4.2)
