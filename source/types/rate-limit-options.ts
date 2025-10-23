@@ -1,14 +1,4 @@
-import type { KvStore } from '@nowarajs/kv-store/types';
-
 export interface RateLimitOptions {
-	/**
-	 * Storage backend for rate limit data.
-	 *
-	 * - If not specified, defaults to in-memory storage
-	 * - Use ':memory:' to explicitly specify in-memory storage
-	 * - Provide a KvStore instance for persistent distributed storage
-	 */
-	readonly store?: ':memory:' | KvStore;
 	/**
 	 * Maximum number of requests allowed in the time window.
 	 *
