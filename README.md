@@ -8,6 +8,11 @@
 	- [✨ Features](#-features)
 	- [🔧 Installation](#-installation)
 	- [⚙️ Usage](#-usage)
+		- [Basic Setup (In-Memory Store)](#basic-setup-in-memory-store)
+		- [Redis Store Setup (Production)](#redis-store-setup-production)
+		- [Storage Options](#storage-options)
+		- [Route-Level Configuration](#route-level-configuration)
+		- [Global Rate Limit with Route Overrides](#global-rate-limit-with-route-overrides)
 	- [📊 Rate Limit Headers](#-rate-limit-headers)
 	- [📚 API Reference](#-api-reference)
 	- [⚖️ License](#-license)
@@ -45,13 +50,14 @@ import { rateLimit } from '@nowarajs/elysia-ratelimit';
 
 // Create application with rate limiting (uses in-memory store by default)
 const app = new Elysia()
-	.use(rateLimit({
-		// or u can set store: ':memory:' explicitly
-		limit: 100,           // 100 requests
-		window: 60,           // per minute (60 seconds)
-	}))
+	.use(rateLimit())
 	.get('/api/data', () => {
 		return { success: true, message: 'This endpoint is rate limited' };
+	}, {
+		rateLimit: {
+			limit: 100,           // 100 requests
+			window: 60,           // per minute (60 seconds)
+		}
 	});
 
 app.listen(3000);
@@ -73,13 +79,14 @@ await redisStore.connect();
 
 // Create application with Redis-backed rate limiting
 const app = new Elysia()
-	.use(rateLimit({
-		store: redisStore,
-		limit: 100,           // 100 requests
-		window: 60,           // per minute (60 seconds)
-	}))
+	.use(rateLimit(redisStore))
 	.get('/api/data', () => {
 		return { success: true, message: 'This endpoint is rate limited' };
+	}, {
+		rateLimit: {
+			limit: 100,           // 100 requests
+			window: 60,           // per minute (60 seconds)
+		}
 	});
 
 app.listen(3000);
@@ -89,9 +96,46 @@ app.listen(3000);
 
 | Store Type | Usage | Best For |
 |------------|-------|----------|
-| Default (`:memory:`) | `rateLimit({ limit: 100, window: 60 })` | Development, single instance |
-| Explicit Memory | `rateLimit({ store: new MemoryStore(), ... })` | When you need store reference |
-| Redis Store | `rateLimit({ store: redisStore, ... })` | Production, distributed systems |
+| Default (`:memory:`) | `rateLimit()` | Development, single instance |
+| Explicit Memory | `rateLimit(new MemoryStore())` | When you need store reference |
+| Redis Store | `rateLimit(redisStore)` | Production, distributed systems |
+
+### Route-Level Configuration
+
+Rate limits can be configured per route using the `rateLimit` macro:
+
+```ts
+const app = new Elysia()
+	.use(rateLimit())
+	.get('/api/endpoint', () => 'content', {
+		rateLimit: {
+			limit: 100,
+			window: 60
+		}
+	});
+```
+
+### Global Rate Limit with Route Overrides
+
+Use `.guard()` to set a global rate limit and override it on specific routes:
+
+```ts
+const app = new Elysia()
+	.use(rateLimit())
+	.guard({
+		rateLimit: {
+			limit: 100,
+			window: 60
+		}
+	})
+	.get('/api/slow', () => 'content', {
+		rateLimit: {
+			limit: 10,          // Override: stricter limit for this route
+			window: 60
+		}
+	})
+	.get('/api/fast', () => 'content')  // Uses global limit
+	.listen(3000);
 ```
 
 ## 📊 Rate Limit Headers
@@ -103,14 +147,6 @@ The plugin automatically adds these headers to all responses:
 | `X-RateLimit-Limit` | Maximum number of requests allowed in the window |
 | `X-RateLimit-Remaining` | Number of requests remaining in current window |
 | `X-RateLimit-Reset` | Time in seconds until the rate limit resets |
-
-### Example Response Headers
-
-```
-X-RateLimit-Limit: 100
-X-RateLimit-Remaining: 85
-X-RateLimit-Reset: 45
-```
 
 ## 📚 API Reference
 
@@ -124,5 +160,5 @@ Distributed under the MIT License. See [LICENSE](./LICENSE) for more information
 
 ## 📧 Contact
 
+- Mail: [nowarajs@pm.me](mailto:nowarajs@pm.me)
 - GitHub: [NowaraJS](https://github.com/NowaraJS)
-- Package: [@nowarajs/elysia-ratelimit](https://www.npmjs.com/package/@nowarajs/elysia-ratelimit)
