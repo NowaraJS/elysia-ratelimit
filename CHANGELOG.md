@@ -1,4 +1,41 @@
 
+## v1.5.0
+
+[compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.4.3...v1.5.0)
+
+### 🚀 Enhancements
+
+- **🚀:** [New ratelimit plugin with macro] ([2a00f28](https://github.com/NowaraJS/elysia-ratelimit/commit/2a00f28))
+
+### 🧹 Refactors
+
+- **🧹:** [improve key] ([fb2f733](https://github.com/NowaraJS/elysia-ratelimit/commit/fb2f733))
+
+### 📖 Documentation
+
+- **📖:** [Update readme] ([ad48c7c](https://github.com/NowaraJS/elysia-ratelimit/commit/ad48c7c))
+
+### 📦 Build
+
+- **📦:** [Update devDependencies and peerDependencies versions] ## Build Changes - Updated `@eslint/js` from `^9.38.0` to `^9.39.1` - Updated `@nowarajs/error` from `^1.3.7` to `^1.3.10` - Updated `@nowarajs/kv-store` from `^1.2.2` to `^1.3.0` - Updated `@types/bun` from `^1.3.0` to `^1.3.2` - Updated `elysia` from `^1.4.13` to `^1.4.16` - Updated `eslint` from `^9.38.0` to `^9.39.1` - Updated `globals` from `^16.4.0` to `^16.5.0` - Updated `typescript-eslint` from `^8.46.2` to `^8.46.4` - Updated peer dependencies for `@nowarajs/error`, `@nowarajs/kv-store`, and `elysia` to match the new versions. ([cb5ae31](https://github.com/NowaraJS/elysia-ratelimit/commit/cb5ae31))
+
+### 🦉 Chore
+
+- **🦉:** [Update .gitignore to include .vscode and .zed] Added .vscode and .zed to the .gitignore file to prevent IDE/editor files from being tracked in the repository. ([d2bded4](https://github.com/NowaraJS/elysia-ratelimit/commit/d2bded4))
+- **🦉:** [Update .npmignore to include .zed and bench directories] ([22389ff](https://github.com/NowaraJS/elysia-ratelimit/commit/22389ff))
+
+### 🧪 Tests
+
+- **🧪:** [new tests for new plugin ratelimit] ([647f80c](https://github.com/NowaraJS/elysia-ratelimit/commit/647f80c))
+
+### 🤖 CI
+
+- **🤖:** [Rename CI workflow from main-ci to main-test] ([ca03e18](https://github.com/NowaraJS/elysia-ratelimit/commit/ca03e18))
+
+### ❤️ Contributors
+
+- Komiroko <komiriko@pm.me>
+
 ## v1.4.3
 
 [compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.4.2...v1.4.3)
