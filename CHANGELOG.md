@@ -1,4 +1,16 @@
 
+## v1.5.3
+
+[compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.5.2...v1.5.3)
+
+### 🌊 Types
+
+- **🌊:** [fix type of plugin] ([85fc628](https://github.com/NowaraJS/elysia-ratelimit/commit/85fc628))
+
+### ❤️ Contributors
+
+- Komiriko <komiriko@pm.me>
+
 ## v1.5.2
 
 [compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.5.1...v1.5.2)
