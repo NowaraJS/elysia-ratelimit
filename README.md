@@ -20,8 +20,6 @@
 
 ## 📝 Description
 
-> A powerful rate limiting plugin for Elysia applications with flexible storage backend support.
-
 **Elysia Rate Limit** provides comprehensive rate limiting capabilities to protect your Elysia APIs from excessive use and potential abuse. It tracks request rates by client IP address and enforces configurable limits based on a fixed time window approach. The plugin supports multiple storage backends through the `@nowarajs/kv-store` ecosystem, including in-memory storage for development and Redis for distributed production environments.
 
 ## ✨ Features
@@ -38,8 +36,14 @@
 ## 🔧 Installation
 
 ```bash
-bun add @nowarajs/elysia-ratelimit @nowarajs/error @nowarajs/kv-store elysia
+bun add @nowarajs/elysia-ratelimit
 ```
+### Peer Dependencies
+#### Required :
+```bash
+bun add @nowarajs/error @nowarajs/kv-store elysia
+```
+
 ## ⚙️ Usage
 
 ### Basic Setup (In-Memory Store)
@@ -55,8 +59,8 @@ const app = new Elysia()
 		return { success: true, message: 'This endpoint is rate limited' };
 	}, {
 		rateLimit: {
-			limit: 100,           // 100 requests
-			window: 60,           // per minute (60 seconds)
+			limit: 100, // 100 requests
+			window: 60, // per minute (60 seconds)
 		}
 	});
 
@@ -84,8 +88,8 @@ const app = new Elysia()
 		return { success: true, message: 'This endpoint is rate limited' };
 	}, {
 		rateLimit: {
-			limit: 100,           // 100 requests
-			window: 60,           // per minute (60 seconds)
+			limit: 100, // 100 requests
+			window: 60, // per minute (60 seconds)
 		}
 	});
 
@@ -130,11 +134,11 @@ const app = new Elysia()
 	})
 	.get('/api/slow', () => 'content', {
 		rateLimit: {
-			limit: 10,          // Override: stricter limit for this route
+			limit: 10, // Override: stricter limit for this route
 			window: 60
 		}
 	})
-	.get('/api/fast', () => 'content')  // Uses global limit
+	.get('/api/fast', () => 'content') // Uses global limit
 	.listen(3000);
 ```
 
