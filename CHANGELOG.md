@@ -1,4 +1,16 @@
 
+## v1.5.2
+
+[compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.5.1...v1.5.2)
+
+### 📖 Documentation
+
+- **📖:** [Update README] - Removed redundant description line for conciseness. - Separated installation command and peer dependencies for better readability. - Simplified comments in usage examples for clarity. ([f9456d2](https://github.com/NowaraJS/elysia-ratelimit/commit/f9456d2))
+
+### ❤️ Contributors
+
+- Komiriko <komiriko@pm.me>
+
 ## v1.5.1
 
 [compare changes](https://github.com/NowaraJS/elysia-ratelimit/compare/v1.5.0...v1.5.1)
